@@ -5,15 +5,16 @@ import javax.swing.JLabel;
 
 public class Tile extends JLabel{
 	
-	private Position postion;
+	private Position position;
 	private Piece piece;
+	private Resource resource;
 	
 	//getter and setter
-	public Position getPostion() {
-		return postion;
+	public Position getPosition() {
+		return position;
 	}
-	public void setPostion(Position postion) {
-		this.postion = postion;
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 	public Piece getPiece() {
 		return piece;
@@ -24,14 +25,15 @@ public class Tile extends JLabel{
 
 	//constructor
 	public Tile(int x, int y, Player p){
-		this.postion = new Position(x, y);
+		this.position = new Position(x, y);
 		this.piece = new Man(x, y, p);
-//		this.setIcon();
+		this.resource = new Resource();
 	}
 	
 	
 	public Tile(int x, int y) {
-		this.postion = new Position(x, y);
+		this.position = new Position(x, y);
+		this.resource = new Resource();
 	}
 	
 	/**
@@ -39,8 +41,11 @@ public class Tile extends JLabel{
 	 * @return true if yes, false if no
 	 */
 	public boolean isOccupied() {
-		if(piece != null) return true;
-		else return false;
+		if(piece == null) {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 	/**
@@ -51,9 +56,33 @@ public class Tile extends JLabel{
 		this.setIcon(null);
 	}
 
-	public void occupy(String path) {
-		this.setIcon(new ImageIcon(path));
+	/**
+	 * occupy this tile by a piece (draw a piece on a tile)
+	 * @param p the piece that occupy the tile
+	 */
+	public void occupy(Piece p) {
+		this.piece = p;
+
+		drawPiece(p, "P1MAN");
+		drawPiece(p, "P1KING");
+		drawPiece(p, "P2MAN");
+		drawPiece(p, "P2KING");
+
 	}
 	
+	/**
+	 * check the type of piece, and draw the piece on this tile
+	 * Notice: p's type and pieceType  is not the same, then will not draw it.
+	 * @param p
+	 * @param pieceType
+	 */
+	private void drawPiece(Piece p, String pieceType) {
+
+		if(p.getType().equals(pieceType)) {
+			System.out.println(resource);
+			this.setIcon(new ImageIcon(resource.getPathMap().get(pieceType)));
+		}	
+	}
+
 
 }

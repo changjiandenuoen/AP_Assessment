@@ -7,6 +7,16 @@ public class King extends Piece{
 		super(x, y, p);
 
 	}
+	
+	@Override
+	public String getType() {
+		if(owner.getId() == 1) {
+			return "P1KING";
+		}else if(owner.getId() == 2) {
+			return "P2KING";
+		}
+		return "";
+	}
 
 	@Override
 	public boolean move(int x, int y) {

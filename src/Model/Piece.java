@@ -2,18 +2,11 @@ package Model;
 
 public abstract class Piece {
 	
-	protected char val;
 	protected Player owner;
 	protected boolean selected;
 	protected Position position;
 	
 	//getter and setter
-	public char getVal() {
-		return val;
-	}
-	public void setVal(char val) {
-		this.val = val;
-	}
 	public Player getOwner() {
 		return owner;
 	}
@@ -32,13 +25,16 @@ public abstract class Piece {
 	public void setPosition(Position position) {
 		this.position = position;
 	}
+	public abstract String getType();
 
 	//	Constructor
 	public Piece(int x, int y, Player p){
 		this.position = new Position(x, y);
 		this.selected = false;
 		this.owner = p;
+
 	}
+	
 	
 	public abstract boolean move(int x, int y);
 	
@@ -47,4 +43,10 @@ public abstract class Piece {
 	public abstract boolean replace();
 	
 	public abstract boolean destroy();
+	
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + "  " + position;
+	}
+	
 }

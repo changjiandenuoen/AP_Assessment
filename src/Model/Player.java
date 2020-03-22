@@ -3,7 +3,16 @@ package Model;
 public class Player {
 	private int id;
 	private boolean turn;
+	private Piece selectPiece;
 	
+	public Player(int i) {
+		this.id = i;
+		if(id == 1) {
+			turn = true;
+		}else {
+			turn = false;
+		}
+	}
 //	getter and setter
 	public int getId() {
 		return id;
@@ -16,6 +25,49 @@ public class Player {
 	}
 	public void setTurn(boolean turn) {
 		this.turn = turn;
+	}
+	public Piece getSelectPiece() {
+		return selectPiece;
+	}
+	public void setSelectPiece(Piece selectPiece) {
+		this.selectPiece = selectPiece;
+	}
+	@Override
+	public String toString() {
+		return "Player " + id;
+	}
+	
+	
+	public void select(Piece piece) {
+		unselect();
+		this.selectPiece = piece;
+		piece.setSelected(true);
+	}
+	
+	public void unselect() {
+		if(this.selectPiece != null) {
+			this.selectPiece.setSelected(false);
+		}
+		this.selectPiece = null;
+	}
+	
+	/**
+	 * player click a certain tile and try to move the selected piece to that tile.
+	 * this method check whether player can succeed.
+	 * @param tile the target tile
+	 * @return
+	 */
+	public boolean tryMove(Tile tile) {
+//		base on their target tile, return whether it can move or not
+		return true;
+	}
+	
+	public boolean tryKill(Tile tile) {
+		return true;
+	}
+	
+	public boolean tryUpGrade(Tile tile) {
+		return true;
 	}
 	
 	
