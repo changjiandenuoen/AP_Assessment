@@ -57,23 +57,51 @@ public class Controller extends MouseAdapter {
 			if(player.getSelectPiece() != null) {
 				//if a normal move is successful, move the selected peice to the clickedTile
 				if(player.tryMove(clickedTile)) {
+					
 					Piece selectedPiece = player.getSelectPiece();	
+					client.getGameInfoLabel().setText(player + "move" + selectedPiece + " to " + clickedPosition);
 					client.cleanTile(selectedPiece.getPosition());
 					selectedPiece.setPosition(clickedPosition);
 					clickedTile.occupy(player.getSelectPiece());
-					player.unselect();
+					
 					
 				//if a kill move is successful, move the selected peice to the clicked Tile
 				// and kill the piece in the middle.
-				}else if(player.tryKill(clickedTile)) {
 					
+					/*
+					 * 1. 斜向2格, 中间一格是敌方棋子
+					 * 2. 点击后, 我方棋子原位置消去, 地方棋子消去, 我方棋子点击位置出现
+					 */
+				}else if(player.tryKill(clickedTile)) {
+
+					Piece midPiece = client.getMidTile(player.getSelectPiece(), clickedTile).getPiece();
+					
+					if(midPiece == null) {
+						return;
+					}
+					
+					if(midPiece.getOwner() != player) {
+						Piece selectedPiece = player.getSelectPiece();	
+						client.getGameInfoLabel().setText(player + "move" + selectedPiece + " to " + clickedPosition);
+						client.cleanTile(selectedPiece.getPosition());
+						client.cleanTile(midPiece.getPosition());
+						selectedPiece.setPosition(clickedPosition);
+						clickedTile.occupy(player.getSelectPiece());
+					}
 					
 				//if a upgrade move is successful, upgrade the selected piece of the player.
-				}else if(player.tryUpGrade(clickedTile)){
+				}
+				
+				if(player.tryUpGrade(clickedTile)){
+					client.getGameInfoLabel().setText( player + " upgrade " + player.getSelectPiece() + " to King " + clickedPosition);
+					Piece newKing = new King(clickedPosition, player);
+					player.setSelectPiece(newKing);
+					clickedTile.occupy(newKing);
+					player.unselect();
 					
 				}
 			}
-
+			player.unselect();
 		}
 	if(player.getSelectPiece() != null) {
 		client.getSelectedLabel().setText(player.getSelectPiece().toString());

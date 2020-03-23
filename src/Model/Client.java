@@ -208,14 +208,16 @@ public class Client extends JFrame implements Runnable{
             	
             	
             	//initialize the pieces
-                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
+//                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
+            	if(((i == 2)&& j %2 == 1)) {
                 	board[i][j] = new Tile(i,j,p2);
                 	
                 	board[i][j].occupy(board[i][j].getPiece());
-                	
+                	 
                 }
                 
-                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
+//                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
+                if(((i == 5 )&& j%2 == 0) ){
                 	board[i][j] = new Tile(i,j,p1);
                 	board[i][j].occupy(board[i][j].getPiece());
                 }
@@ -241,7 +243,6 @@ public class Client extends JFrame implements Runnable{
             }
             
         }
-        System.out.println(new ChessBoard(board));
 	}
 	
 	/**
@@ -250,6 +251,26 @@ public class Client extends JFrame implements Runnable{
 	 */
 	public void cleanTile(Position pos) {
 		board[pos.getX()][pos.getY()].clean();
+	}
+	
+	
+	/**
+	 * 
+	 * @param p1 the piece you choose
+	 * @param t2 the tile you click
+	 * @return
+	 */
+	public Tile getMidTile(Piece p1, Tile t2) {
+		int x1 = p1.getPosition().getX();
+		int y1 = p1.getPosition().getY();
+		int x2 = t2.getPosition().getX();
+		int y2 = t2.getPosition().getY();
+		if(Math.abs(x1-x2) == 2 && Math.abs(y1-y2) == 2) {
+			return board[ (x1 + x2) /2][(y1 + y2)/2];
+		}else {
+			System.out.println("two tiles are too close or too far");
+			return null;
+		}
 		
 	}
 	
@@ -264,7 +285,6 @@ public class Client extends JFrame implements Runnable{
 	@Override
 	public void run() {
 		this.setVisible(true);
-		
 	}
 	
 	/**

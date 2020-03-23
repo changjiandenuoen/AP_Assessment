@@ -54,20 +54,53 @@ public class Player {
 	/**
 	 * player click a certain tile and try to move the selected piece to that tile.
 	 * this method check whether player can succeed.
+	 * This method assume that player already selected a piece
+	 * 
 	 * @param tile the target tile
 	 * @return
 	 */
 	public boolean tryMove(Tile tile) {
-//		base on their target tile, return whether it can move or not
-		return true;
+		Position selectPos = selectPiece.getPosition();
+		Position targetPos = tile.getPosition();
+		Dir direction = selectPos.checkDirection(targetPos, 1);
+		
+		if(direction == null) {
+			return false;
+		}
+		
+		if(selectPos.checkDistance(targetPos, 1)) {
+			return selectPiece.move(direction);
+			
+		}
+		
+		return false;
 	}
 	
+
 	public boolean tryKill(Tile tile) {
+		Position selectPos = selectPiece.getPosition();
+		Position targetPos = tile.getPosition();
+		Dir direction = selectPos.checkDirection(targetPos, 2);
+		
+		if(direction == null) {
+			return false;
+		}
+		
+		if(selectPos.checkDistance(targetPos, 2)) {
+			
+			return selectPiece.kill(direction);
+			
+		}
 		return true;
 	}
 	
 	public boolean tryUpGrade(Tile tile) {
-		return true;
+		if((tile.getPosition().getX() == 0 && id == 1) || (tile.getPosition().getX() == 7 && id == 2)) {
+			return true;
+		}else {
+			return false;
+		}
+		
 	}
 	
 	

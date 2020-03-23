@@ -5,7 +5,9 @@ public class King extends Piece{
 	
 	public King(int x, int y, Player p) {
 		super(x, y, p);
-
+	}
+	public King(Position pos, Player p) {
+		super(pos, p);
 	}
 	
 	@Override
@@ -19,26 +21,24 @@ public class King extends Piece{
 	}
 
 	@Override
-	public boolean move(int x, int y) {
+	public boolean move(Dir direction) {
+		if(direction == Dir.TOPLEFT || direction == Dir.TOPRIGHT || direction == Dir.BOTLEFT || direction == Dir.BOTRIGHT) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean kill(Dir direction) {
+		// TODO Auto-generated method stub
+		return move(direction);
+	}
+
+	@Override
+	public boolean upgrade(Dir direction) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
-	public boolean eat() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean replace() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean destroy() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

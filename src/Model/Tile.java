@@ -79,10 +79,8 @@ public class Tile extends JLabel{
 	private void drawPiece(Piece p, String pieceType) {
 
 		if(p.getType().equals(pieceType)) {
-			System.out.println(resource);
 			this.setIcon(new ImageIcon(resource.getPathMap().get(pieceType)));
 		}	
 	}
-
-
+	
 }

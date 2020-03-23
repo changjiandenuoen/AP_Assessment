@@ -34,15 +34,16 @@ public abstract class Piece {
 		this.owner = p;
 
 	}
+	public Piece(Position pos, Player p) {
+		this.position = pos;
+		this.selected = false;
+		this.owner = p;
+	}
 	
 	
-	public abstract boolean move(int x, int y);
-	
-	public abstract boolean eat();
-	
-	public abstract boolean replace();
-	
-	public abstract boolean destroy();
+	public abstract boolean move(Dir direction);
+	public abstract boolean kill(Dir direction);
+	public abstract boolean upgrade(Dir direction);
 	
 	@Override
 	public String toString() {
