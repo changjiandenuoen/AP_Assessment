@@ -1,6 +1,4 @@
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.EOFException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -14,9 +12,6 @@ public class Player {
 	private Piece selectPiece;
 	private Socket socket;
 	
-	
-	
-
 	public Player(Socket socket, int i) {
 		this.socket = socket;
 		this.id = i;
@@ -125,13 +120,11 @@ public class Player {
 	
 	public void sendToServer(Position pos) {
 		OutputStream os = null;
-		BufferedOutputStream bos = null;
 		ObjectOutputStream oos = null;
 		
 		try {
 			os = socket.getOutputStream();
-			bos = new BufferedOutputStream(os);
-			oos = new ObjectOutputStream(bos);
+			oos = new ObjectOutputStream(os);
 			oos.writeObject(pos);
 			oos.writeObject(null);
 			oos.flush();
@@ -140,22 +133,21 @@ public class Player {
 			e.printStackTrace();
 		}finally {
 			oos = null;
-			bos = null;
 			os = null;
 		}
 	}
 
 	public Position recieveFromServer() {
 		InputStream is = null;
-		BufferedInputStream bis = null;
 		ObjectInputStream ois = null;
 		Position pos = null;
 		try {
 			is = socket.getInputStream();
-			bis = new BufferedInputStream(is);
-			ois = new ObjectInputStream(bis);
+			ois = new ObjectInputStream(is);
 			pos = (Position) ois.readObject();
 			System.out.println(this.toString() + " recieve postion "+ pos );
+
+
 		}catch (IOException e) {
 			e.printStackTrace();
 			
@@ -163,7 +155,6 @@ public class Player {
 			e.printStackTrace();
 		}finally {
 			ois = null;
-			bis = null;
 			is = null;
 		}
 		return pos;	

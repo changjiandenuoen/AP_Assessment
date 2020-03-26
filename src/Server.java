@@ -39,22 +39,16 @@ public class Server extends Thread{
 			p2 = new Player(s2, 2);
 			System.out.println("recieve connection from" + p2);
 
-			System.out.println(" Now we have two players, game start!");
+			System.out.println("Now we have two players, game start!");
 			while(true) {
 				if(s1.isClosed() || s2.isClosed()) {
 					
 					break;
 				}
 				
-				if(s1.getOutputStream() !=null) {
+				transit(s1, s2);
+				transit(s2, s1);
 
-					transit(s1, s2);
-				}
-				
-				if(s2.getOutputStream() != null) {
-
-					transit(s2, s1);
-				}
 			}
 			
 			
@@ -87,15 +81,20 @@ public class Server extends Thread{
 		ObjectInputStream ois = null;
 		ObjectOutputStream oos = null;
 		
+		Position pos;
+		
 		try {
-
-			
+		
 			is = s1.getInputStream();
 			bis = new BufferedInputStream(is);
-			ois = new ObjectInputStream(bis);
-			Position pos= (Position) ois.readObject();
-			
-			System.out.println("recieve Position" + pos);
+			if(bis.available() >0) {
+				ois = new ObjectInputStream(bis);
+				pos= (Position) ois.readObject();
+				System.out.println("recieve and send position " + pos + " from client");
+	
+			}else {
+				return;
+			}
 			
 			os = s2.getOutputStream();
 			bos = new BufferedOutputStream(os);

@@ -249,6 +249,15 @@ public class View extends JFrame implements Runnable{
 		cleanTile(selectedPiece.getPosition());
 		selectedPiece.setPosition(targetTile.getPosition());
 		targetTile.occupy(p.getSelectPiece());
+		p.sendToServer(targetTile.getPosition());
+
+//		if(p.getId() == 1) {
+//			p1.endTurn();
+//			p2.setTurn(true);
+//		}else if(p.getId() == 2){
+//			p2.endTurn();
+//			p1.setTurn(true);
+//		}
 	}
 	
 	public void killPiece(Player p, Tile targetTile) {

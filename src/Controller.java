@@ -27,7 +27,8 @@ public class Controller extends MouseAdapter {
 		//if its not your turn, mouse click will recieve nothing
 
 		if(!player.isTurn()) {
-			view.setGameInfoLabel("Please wait for other play move");
+			view.setGameInfoLabel("Please wait for other player move");
+			System.out.println(player + " - " + player.isTurn());
 			return;
 		}
 		
@@ -62,17 +63,17 @@ public class Controller extends MouseAdapter {
 				//if a normal move is successful, move the selected peice to the clickedTile
 				if(player.tryMove(clickedTile)) {
 					view.movePiece(player, clickedTile);
-					
+
 					
 				}else if(player.tryKill(clickedTile)) {
 					view.killPiece(player, clickedTile);
-					
+
 				}	
 				//if a upgrade move is successful, upgrade the selected piece of the player.
 				if(player.tryUpGrade(clickedTile)){
 					view.upgradePiece(player, clickedTile);
 				}
-				player.sendToServer(clickedTile.getPosition());
+				
 			}
 			
 			player.unselect();
