@@ -1,28 +1,33 @@
+import java.net.Socket;
+import java.util.List;
+
 import javax.swing.SwingWorker;
 
-public class SwingUpdater extends SwingWorker<Void, Void> {
+public class SwingUpdater extends SwingWorker<Void, Command> {
 	
 	View view;
 	Player player;
-	Position oriPos;
-	Position targetPos;
+	Socket socket;
 	
-	public SwingUpdater(View view, Player player, Command cmd) {
+	public SwingUpdater(View view, Player player, Socket socket) {
 		this.view = view;
 		this.player = player;
-		this.oriPos = cmd.getOriPos();
-		this.targetPos = cmd.getTargetPos();
+		this.socket = socket;
 	}
 	
 	@Override
 	protected Void doInBackground() throws Exception {
-		System.out.println("update the piece of" + player );
-		return null;
+		while(true) {
+
+			if(socket.getInputStream() != null) {
+				publish(player.recieveFromServer());
+			}
+		}
 	}
 	
-	@Override
-	protected void done() {
-		view.turnMove(player, oriPos, targetPos);
+	protected void process(List<Command> cmds) {
+		 Command cmd = cmds.get(cmds.size()-1);
+		 view.turnMove(view.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
 	}
-
+	
 }

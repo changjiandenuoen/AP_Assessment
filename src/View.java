@@ -3,19 +3,11 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 
 public class View extends JFrame implements Runnable{
@@ -271,7 +263,7 @@ public class View extends JFrame implements Runnable{
 				if(player.getSelectPiece() != null) {
 					//if a normal move is successful, move the selected peice to the clickedTile
 					if(player.tryMove(clickedTile)) {
-						
+
 						movePiece(player, clickedTile);
 
 						
@@ -315,16 +307,7 @@ public class View extends JFrame implements Runnable{
 		cleanTile(selectedPiece.getPosition());
 		selectedPiece.setPosition(targetTile.getPosition());
 		targetTile.occupy(p.getSelectPiece());
-		
-		
 
-//		if(p.getId() == 1) {
-//			p1.endTurn();
-//			p2.setTurn(true);
-//		}else if(p.getId() == 2){
-//			p2.endTurn();
-//			p1.setTurn(true);
-//		}
 	}
 	
 	public void killPiece(Player p, Tile targetTile) {
@@ -346,10 +329,6 @@ public class View extends JFrame implements Runnable{
 		Piece newKing = new King(targetTile.getPosition(), p);
 		p.setSelectPiece(newKing);
 		targetTile.occupy(newKing);
-	}
-	
-	public void pieceUpgrade() {
-		
 	}
 	
 	/**

@@ -32,7 +32,7 @@ public enum Dir {
 	 * @param x
 	 * @param y
 	 * @param distance
-	 * @return
+	 * @return direction
 	 */
 	public static Dir getDirByPos(int x, int y, int distance) {
 		if(distance <= 0) {

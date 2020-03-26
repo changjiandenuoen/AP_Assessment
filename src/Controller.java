@@ -3,8 +3,6 @@
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.SwingWorker;
-
 
 public class Controller extends MouseAdapter {
 	
@@ -34,14 +32,12 @@ public class Controller extends MouseAdapter {
 		
 		//get the click position
 		Tile clickedTile = null;
-		Piece clickedPiece = null;
 		
 		//get the Tile user clicked
 		if(e.getSource() instanceof Tile) {
 			clickedTile = ((Tile) e.getSource());
-			clickedPiece = clickedTile.getPiece();
 		}
-		
+
 		view.turnMove(player, clickedTile.getPosition());
 
 	}

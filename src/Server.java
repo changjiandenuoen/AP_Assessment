@@ -12,6 +12,13 @@ import java.net.Socket;
 
 
 public class Server extends Thread{
+	
+	public static void main(String[] args) {
+		new Server().run();
+	}
+	
+	
+	
 	static Player p1;
 	static Player p2;
 	private static ServerSocket ss;
@@ -19,9 +26,6 @@ public class Server extends Thread{
 	private static Socket s2;
 	private static int PORT = 9999;
 	
-	public static void main(String[] args) {
-		new Server().run();
-	}
 	
 	@Override
 	public void run() {
@@ -32,18 +36,20 @@ public class Server extends Thread{
 			//this socket is sent from AppMain1
 			s1 = ss.accept();
 			p1 = new Player(s1, 1);
-			System.out.println("recieve connection from " + p1);
+			OutputStream output = s1.getOutputStream();
+			output.write(1);
 			
 			//this socket is sent from AppMain2
 			s2 = ss.accept();
 			p2 = new Player(s2, 2);
-			System.out.println("recieve connection from" + p2);
+			output = s2.getOutputStream();
+			output.write(2);
 
 			System.out.println("Now we have two players, game start!");
 			while(true) {
-				if(s1.isClosed() || s2.isClosed()) {
-					
-					break;
+				if(s1.isClosed() && s2.isClosed()) {
+					ss.close();
+					System.exit(0);
 				}
 				
 				transit(s1, s2);
@@ -90,7 +96,7 @@ public class Server extends Thread{
 			if(bis.available() >0) {
 				ois = new ObjectInputStream(bis);
 				cmd= (Command) ois.readObject();
-				System.out.println("recieve and send COMMAND " + cmd + " from client");
+//				System.out.println("recieve and send COMMAND " + cmd + " from client");
 	
 			}else {
 				return;

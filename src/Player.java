@@ -132,7 +132,7 @@ public class Player {
 			oos.writeObject(cmd);
 			oos.writeObject(null);
 			oos.flush();
-			System.out.println(this.toString() + " send postion "+ cmd );
+//			System.out.println(this.toString() + " send postion "+ cmd );
 			endTurn();
 		}catch (IOException e) {
 			e.printStackTrace();
@@ -143,6 +143,11 @@ public class Player {
 		}
 	}
 
+	/**
+	 * The active player will recieve a command from server
+	 * which can help the view update the chessboard
+	 * @return
+	 */
 	public Command recieveFromServer() {
 		InputStream is = null;
 		BufferedInputStream bis = null;
@@ -153,7 +158,7 @@ public class Player {
 			bis = new BufferedInputStream(is);
 			ois = new ObjectInputStream(bis);
 			cmd = (Command) ois.readObject();
-			System.out.println(this.toString() + " recieve Command "+ cmd );
+//			System.out.println(this.toString() + " recieve Command "+ cmd );
 			setTurn(true);
 
 		}catch (IOException e) {
