@@ -1,4 +1,4 @@
-package Model;
+
 
 public enum Dir {
 	TOPLEFT(-1, -1), 
@@ -26,6 +26,14 @@ public enum Dir {
 		return name;
 	}
 	
+	/**
+	 * base on the x, y, and distance, return a direction
+	 * for example, if x = -3 y = 3, distance is 3, then return TOPRIGHT
+	 * @param x
+	 * @param y
+	 * @param distance
+	 * @return
+	 */
 	public static Dir getDirByPos(int x, int y, int distance) {
 		if(distance <= 0) {
 			return null;

@@ -1,17 +1,26 @@
-package Model;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 
 public class Player {
 	private int id;
 	private boolean turn;
 	private Piece selectPiece;
+	private Socket socket;
 	
-	public Player(int i) {
+	
+	
+
+	public Player(Socket socket, int i) {
+		this.socket = socket;
 		this.id = i;
-		if(id == 1) {
-			turn = true;
-		}else {
-			turn = false;
-		}
+		this.turn = false;
 	}
 //	getter and setter
 	public int getId() {
@@ -32,6 +41,13 @@ public class Player {
 	public void setSelectPiece(Piece selectPiece) {
 		this.selectPiece = selectPiece;
 	}
+	public Socket getSocket() {
+		return socket;
+	}
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
+	
 	@Override
 	public String toString() {
 		return "Player " + id;
@@ -88,7 +104,7 @@ public class Player {
 		
 		if(selectPos.checkDistance(targetPos, 2)) {
 			
-			return selectPiece.kill(direction);
+			return selectPiece.move(direction);
 			
 		}
 		return true;
@@ -100,8 +116,59 @@ public class Player {
 		}else {
 			return false;
 		}
-		
 	}
+	
+	public void endTurn() {
+		turn = !turn;
+	}
+	
+	
+	public void sendToServer(Position pos) {
+		OutputStream os = null;
+		BufferedOutputStream bos = null;
+		ObjectOutputStream oos = null;
+		
+		try {
+			os = socket.getOutputStream();
+			bos = new BufferedOutputStream(os);
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(pos);
+			oos.writeObject(null);
+			oos.flush();
+			System.out.println(this.toString() + " send postion "+ pos );
+		}catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			oos = null;
+			bos = null;
+			os = null;
+		}
+	}
+
+	public Position recieveFromServer() {
+		InputStream is = null;
+		BufferedInputStream bis = null;
+		ObjectInputStream ois = null;
+		Position pos = null;
+		try {
+			is = socket.getInputStream();
+			bis = new BufferedInputStream(is);
+			ois = new ObjectInputStream(bis);
+			pos = (Position) ois.readObject();
+			System.out.println(this.toString() + " recieve postion "+ pos );
+		}catch (IOException e) {
+			e.printStackTrace();
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}finally {
+			ois = null;
+			bis = null;
+			is = null;
+		}
+		return pos;	
+	}
+	
 	
 	
 }

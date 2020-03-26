@@ -1,4 +1,4 @@
-package Model;
+
 
 public class King extends Piece{
 	
@@ -27,18 +27,6 @@ public class King extends Piece{
 		}else {
 			return false;
 		}
-	}
-
-	@Override
-	public boolean kill(Dir direction) {
-		// TODO Auto-generated method stub
-		return move(direction);
-	}
-
-	@Override
-	public boolean upgrade(Dir direction) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

@@ -1,4 +1,4 @@
-package Model;
+
 
 public class Man extends Piece {
 	
@@ -11,7 +11,9 @@ public class Man extends Piece {
 	
 	@Override
 	public String getType() {
+		
 		if(owner.getId() == 1) {
+			
 			return "P1MAN";
 		}else if(owner.getId() == 2) {
 			return "P2MAN";
@@ -29,20 +31,6 @@ public class Man extends Piece {
 		}else {
 			return false;
 		}
-	}
-	
-	/*
-	 * 要杀子,首先判断是否是2斜线距离,如果是man, 只能往前方向杀 
-	 */
-	@Override
-	public boolean kill(Dir direction) {
-		return move(direction);
-	}
-
-	@Override
-	public boolean upgrade(Dir direction) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

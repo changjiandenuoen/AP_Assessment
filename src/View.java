@@ -1,4 +1,4 @@
-package Model;
+
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,27 +15,24 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 
-public class Client extends JFrame implements Runnable{
+public class View extends JFrame implements Runnable{
 	
 	public static final int unit = 40;
 	public static final int BoardWidth = 8;
 	public static final int BoardHeight = 8;
 	
-	//IO
-	private Socket socket;
-	private ServerSocket serverSocket;
-	private DataOutputStream dos;
-	private DataInputStream dis;
-	
 	private Controller controller;
 	private Resource resource;
 	private Tile[][] board;
 	private Tile[][] initialBoard;
-	private Player p1 = new Player(1);
-	private Player p2 = new Player(2);
-	private JTextArea gameConsole;
+	//player who control black
+	private Player p1;
+	//player who control white
+	private Player p2;
+	private JPanel boardPanel;
 	private JLabel turnLabel;
 	private JLabel 	selectedLabel;
 	private JLabel 	gameInfoLabel;
@@ -44,21 +41,22 @@ public class Client extends JFrame implements Runnable{
 	public JLabel getTurnLabel() {
 		return turnLabel;
 	}
-	public void setTurnLabel(JLabel turnLabel) {
-		this.turnLabel = turnLabel;
+	public void setTurnLabel(String turnLabel) {
+		this.turnLabel.setText(turnLabel);
 	}
 	public JLabel getSelectedLabel() {
 		return selectedLabel;
 	}
-	public void setSelectedLabel(JLabel selectedLabel) {
-		this.selectedLabel = selectedLabel;
+	public void setSelectedLabel(String selectedLabel) {
+		this.selectedLabel.setText(selectedLabel);
 	}
 	public JLabel getGameInfoLabel() {
 		return gameInfoLabel;
 	}
-	public void setGameInfoLabel(JLabel gameInfoLabel) {
-		this.gameInfoLabel = gameInfoLabel;
+	public void setGameInfoLabel(String gameInfoLabel) {
+		this.gameInfoLabel.setText(gameInfoLabel);
 	}
+	
 	public Controller getController() {
 		return controller;
 	}
@@ -80,17 +78,14 @@ public class Client extends JFrame implements Runnable{
 	public Tile[][] getInitialBoard() {
 		return initialBoard;
 	}
-	public Player getP1() {
-		return p1;
-	}
-	public Player getP2() {
-		return p2;
-	}
+
 
 	//Constructor
-	public Client(){
-		controller = new Controller(p1);
-		controller.setClient(this);
+	public View(Player p){
+		
+		createPlayer(p);
+		controller = new Controller(p);
+		controller.setView(this);
 		resource = new Resource();
 		this.setSize(19*unit,10*unit);
 		this.setTitle("game");
@@ -108,7 +103,7 @@ public class Client extends JFrame implements Runnable{
 		setGrid(innerPanel, 1, 2);
 		
 		//this panel display the board (left)
-		JPanel boardPanel = new JPanel();
+		boardPanel = new JPanel();
 		setGrid(boardPanel, 8, 8);
 		createBoardArea(boardPanel);
 		boardPanel.setBorder(BorderFactory.createDashedBorder(null, 1, 0));
@@ -140,13 +135,7 @@ public class Client extends JFrame implements Runnable{
 
 	}
 	
-	/**
-	 * redraw the board based on the model
-	 */
-	public void updateBoard() {
-		
-	}
-	
+
 	public void initInfo() {
 		turnLabel.setText("turn[1] : p1");
 		selectedLabel.setText("P1 select: man (1,0)"); 
@@ -170,25 +159,31 @@ public class Client extends JFrame implements Runnable{
 	 * clean all the pieces on the board, return the initial states of the game
 	 */
 	public void replay() {
-		
-	}
-	
-	/**
-	 * exit the game
-	 */
-	public void exit() {
-		
+		createBoardArea(boardPanel);
+		initInfo();
+		repaint();
 	}
 	
 	//Helper Methods
+	
+	private void createPlayer(Player p) {
+		if(p.getId() == 1) {
+			p1 = p;
+			p2 = new Player(null, 2);
+			
+		}else if (p.getId() == 2){
+			p2 = p;
+			p1 = new Player(null, 1);
+		}
+		
+		p1.setTurn(true);
+		p2.setTurn(false);
+	}
+	
 	private void setBorder(JPanel panel, int a, int b, int c, int d) {
 		panel.setLayout(new BorderLayout());
 		Border emptyBorder = BorderFactory.createEmptyBorder(1*unit, 1*unit, 1*unit, 1*unit);
 		panel.setBorder(emptyBorder);
-	}
-	
-	private void setGrid(JPanel panel, int row, int col, int hg, int vg) {
-		panel.setLayout(new GridLayout(row, col, hg, vg));
 	}
 	
 	private void setGrid(JPanel panel, int row, int col) {
@@ -245,6 +240,42 @@ public class Client extends JFrame implements Runnable{
         }
 	}
 	
+	
+	
+	public void movePiece(Player p, Tile targetTile) {
+		Piece selectedPiece = p.getSelectPiece();	
+		
+		gameInfoLabel.setText(p + " move " + selectedPiece + " to " + targetTile.getPosition());
+		cleanTile(selectedPiece.getPosition());
+		selectedPiece.setPosition(targetTile.getPosition());
+		targetTile.occupy(p.getSelectPiece());
+	}
+	
+	public void killPiece(Player p, Tile targetTile) {
+		Piece midPiece = getMidTile(p.getSelectPiece(), targetTile).getPiece();
+		
+		if(midPiece == null) {
+			return;
+		}
+		
+		if(midPiece.getOwner() != p) {
+			movePiece(p, targetTile);
+			cleanTile(midPiece.getPosition());
+		}
+		
+	}
+	
+	public void upgradePiece(Player p, Tile targetTile) {
+		gameInfoLabel.setText( p + " upgrade " + p.getSelectPiece() + " to King " + targetTile.getPosition());
+		Piece newKing = new King(targetTile.getPosition(), p);
+		p.setSelectPiece(newKing);
+		targetTile.occupy(newKing);
+	}
+	
+	public void pieceUpgrade() {
+		
+	}
+	
 	/**
 	 * remove the piece on the certain tile of the chessboard
 	 * @param tile
@@ -277,13 +308,9 @@ public class Client extends JFrame implements Runnable{
 	
 // the Below methods are main method and all method relatived to servers
 	
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Client());
-		
-	}
-	
 	@Override
 	public void run() {
+
 		this.setVisible(true);
 	}
 	
@@ -302,5 +329,4 @@ public class Client extends JFrame implements Runnable{
 		
 	}
 
-	
 }

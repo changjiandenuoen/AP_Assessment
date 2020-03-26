@@ -1,4 +1,4 @@
-package Model;
+
 
 public abstract class Piece {
 	
@@ -42,8 +42,6 @@ public abstract class Piece {
 	
 	
 	public abstract boolean move(Dir direction);
-	public abstract boolean kill(Dir direction);
-	public abstract boolean upgrade(Dir direction);
 	
 	@Override
 	public String toString() {

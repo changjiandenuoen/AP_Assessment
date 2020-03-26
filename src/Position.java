@@ -1,6 +1,16 @@
-package Model;
 
-public class Position {
+
+import java.io.Serializable;
+
+/**
+ * After player move/kill a piece, they will send a Position to the server
+ * And server will send this position to another client.
+ * Another Client then use this position to call the relative method to update their view.
+ */
+
+public class Position implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private int x;
 	private int y;
 	
