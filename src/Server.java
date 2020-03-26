@@ -81,7 +81,7 @@ public class Server extends Thread{
 		ObjectInputStream ois = null;
 		ObjectOutputStream oos = null;
 		
-		Position pos;
+		Command cmd;
 		
 		try {
 		
@@ -89,8 +89,8 @@ public class Server extends Thread{
 			bis = new BufferedInputStream(is);
 			if(bis.available() >0) {
 				ois = new ObjectInputStream(bis);
-				pos= (Position) ois.readObject();
-				System.out.println("recieve and send position " + pos + " from client");
+				cmd= (Command) ois.readObject();
+				System.out.println("recieve and send COMMAND " + cmd + " from client");
 	
 			}else {
 				return;
@@ -99,7 +99,7 @@ public class Server extends Thread{
 			os = s2.getOutputStream();
 			bos = new BufferedOutputStream(os);
 			oos = new ObjectOutputStream(bos);
-			oos.writeObject(pos);
+			oos.writeObject(cmd);
 			oos.flush();
 		} catch (EOFException e) {
 

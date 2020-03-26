@@ -1,4 +1,6 @@
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -118,35 +120,41 @@ public class Player {
 	}
 	
 	
-	public void sendToServer(Position pos) {
+	public void sendToServer(Command cmd) {
 		OutputStream os = null;
+		BufferedOutputStream bos;
 		ObjectOutputStream oos = null;
 		
 		try {
 			os = socket.getOutputStream();
-			oos = new ObjectOutputStream(os);
-			oos.writeObject(pos);
+			bos = new BufferedOutputStream(os);
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(cmd);
 			oos.writeObject(null);
 			oos.flush();
-			System.out.println(this.toString() + " send postion "+ pos );
+			System.out.println(this.toString() + " send postion "+ cmd );
+			endTurn();
 		}catch (IOException e) {
 			e.printStackTrace();
 		}finally {
 			oos = null;
+			bos = null;
 			os = null;
 		}
 	}
 
-	public Position recieveFromServer() {
+	public Command recieveFromServer() {
 		InputStream is = null;
+		BufferedInputStream bis = null;
 		ObjectInputStream ois = null;
-		Position pos = null;
+		Command cmd = null;
 		try {
 			is = socket.getInputStream();
-			ois = new ObjectInputStream(is);
-			pos = (Position) ois.readObject();
-			System.out.println(this.toString() + " recieve postion "+ pos );
-
+			bis = new BufferedInputStream(is);
+			ois = new ObjectInputStream(bis);
+			cmd = (Command) ois.readObject();
+			System.out.println(this.toString() + " recieve Command "+ cmd );
+			setTurn(true);
 
 		}catch (IOException e) {
 			e.printStackTrace();
@@ -155,11 +163,9 @@ public class Player {
 			e.printStackTrace();
 		}finally {
 			ois = null;
+			bis = null;
 			is = null;
 		}
-		return pos;	
+		return cmd;	
 	}
-	
-	
-	
 }

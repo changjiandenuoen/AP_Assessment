@@ -38,6 +38,13 @@ public class View extends JFrame implements Runnable{
 	private JLabel 	gameInfoLabel;
 	
 	
+	public Player getOppoPlayer() {
+		if(p1.getSocket() == null) {
+			return p1;
+		}else{
+			return p2;
+		}
+	}
 	public JLabel getTurnLabel() {
 		return turnLabel;
 	}
@@ -240,16 +247,76 @@ public class View extends JFrame implements Runnable{
         }
 	}
 	
+	public void turnMove(Player player, Position targetPos) {
+		Tile clickedTile = board[targetPos.getX()][targetPos.getY()];
+		Piece clickedPiece = clickedTile.getPiece();
+		
+		//if user click a tile that has a piece
+			if(clickedTile.isOccupied()) {
+				if(!clickedPiece.isSelected() && clickedPiece.getOwner() == player) {
+					
+					//if the piece in the tile is not selected and player do not select any piece
+					if(clickedPiece != null ) {
+						player.unselect();	
+					}
+					player.select(clickedPiece);		
+				
+				// if user click the piece that he already selected, unselect the piece
+				}else if(player.getSelectPiece() == clickedPiece ){
+					player.unselect();
+				}
+				
+			//if user click a tile that has no piece
+			}else {
+				if(player.getSelectPiece() != null) {
+					//if a normal move is successful, move the selected peice to the clickedTile
+					if(player.tryMove(clickedTile)) {
+						
+						movePiece(player, clickedTile);
+
+						
+					}else if(player.tryKill(clickedTile)) {
+						killPiece(player, clickedTile);
+
+					}	
+					//if a upgrade move is successful, upgrade the selected piece of the player.
+					if(player.tryUpGrade(clickedTile)){
+						upgradePiece(player, clickedTile);
+					}
+					
+				}
+
+				player.unselect();
+				
+			}
+		if(player.getSelectPiece() != null) {
+			getSelectedLabel().setText(player.getSelectPiece().toString());
+		}else {
+			setSelectedLabel("please select a piece!");
+		}
+		
+		repaint();
+	}
 	
+	public void turnMove(Player player, Position oriPos, Position targetPos) {
+		Tile selectedTile = board[oriPos.getX()][oriPos.getY()];
+		System.out.println(selectedTile.isOccupied());
+		player.select(selectedTile.getPiece());
+		turnMove(player, targetPos);
+	
+	}
 	
 	public void movePiece(Player p, Tile targetTile) {
 		Piece selectedPiece = p.getSelectPiece();	
-		
+		if(p.getSocket() != null) {
+			p.sendToServer(new Command(selectedPiece.getPosition(), targetTile.getPosition()));
+		}
 		gameInfoLabel.setText(p + " move " + selectedPiece + " to " + targetTile.getPosition());
 		cleanTile(selectedPiece.getPosition());
 		selectedPiece.setPosition(targetTile.getPosition());
 		targetTile.occupy(p.getSelectPiece());
-		p.sendToServer(targetTile.getPosition());
+		
+		
 
 //		if(p.getId() == 1) {
 //			p1.endTurn();
@@ -321,21 +388,6 @@ public class View extends JFrame implements Runnable{
 	public void run() {
 
 		this.setVisible(true);
-	}
-	
-	/**
-	 * send the click infomation to the server
-	 * @param pos
-	 */
-	public void sendClickInfo(Position pos) {
-		
-	}
-	
-	/**
-	 * server will 
-	 */
-	public void recieveServerRequest() {
-		
 	}
 
 }

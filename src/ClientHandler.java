@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 public class ClientHandler extends Thread{
 	
@@ -37,7 +38,8 @@ public class ClientHandler extends Thread{
 			player = new Player(s, id);
 			
 			System.out.println(player);
-			SwingUtilities.invokeLater(new View(player));
+			View view = new View(player);
+			SwingUtilities.invokeLater(view);
 			
 			while(true) {
 				if(this.isInterrupted()) {
@@ -45,7 +47,9 @@ public class ClientHandler extends Thread{
 				}
 				
 				if(s.getInputStream() != null) {
-					Position pos= (Position) player.recieveFromServer();
+					Command cmd= (Command) player.recieveFromServer();
+					new SwingUpdater(view, view.getOppoPlayer(), cmd).execute();
+					
 				}
 			}
 
