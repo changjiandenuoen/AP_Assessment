@@ -284,9 +284,10 @@ public class View extends JFrame implements Runnable{
 			Tile midTile;
 			
 			//if possibleTile ==null : do not have possibleDir in that direction
-			if(possibleTile == null) {
+			if(possibleTile == null || !possibleTile.isOccupied()) {
 				continue;
 			}else {
+				
 				System.out.println("possible kill move: " + possibleDir.get(i)+ " " +selectedTile.getPosition()+ " to "+ possibleTile.getPosition());
 				//TOPright have problem
 				//BOTRIGHT -> TOPRIGHT
@@ -366,13 +367,6 @@ public class View extends JFrame implements Runnable{
 			//if user click a tile that has no piece
 			}else {
 				if(player.getSelectPiece() != null) {
-					
-					//before actual move, check whether player must Kill
-					//and find out whether clickedTile is a mustKillMove
-					if(!mustKillMove(clickedTile, player)) {
-						System.out.println("YOU MUST KILL!!");
-						return;
-					}
 					
 					//if a normal move is successful, move the selected peice to the clickedTile
 					if(player.tryMove(clickedTile)) {
