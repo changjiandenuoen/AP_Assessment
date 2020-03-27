@@ -262,9 +262,10 @@ public class View extends JFrame implements Runnable{
 	 * in the possible direction of active player from the current tile
 	 * there are some piece from another player that must kill!
 	 * find these possible tiles and add them into killList 
+	 * 
 	 * @param tile the tile where the player's selected piece from
 	 * @param p the active player
-	 * @return 
+	 * @return true if there is a mustKill, else return false
 	 */
 	public boolean mustKillCheck(Tile selectedTile, Player p) {
 	//TODO: syso testing
@@ -278,24 +279,23 @@ public class View extends JFrame implements Runnable{
 		//by using these direction, this method can check whether there is a piece that can kill
 		ArrayList<Dir> possibleDir = p.getSelectPiece().getDirList();
 		Tile possibleTile;
+		
 		for (int i = 0; i <possibleDir.size(); i++) {
 
 			possibleTile = getTileByDir(selectedTile, possibleDir.get(i), 2);
 			Tile midTile;
 			
 			//if possibleTile ==null : do not have possibleDir in that direction
-			if(possibleTile == null || !possibleTile.isOccupied()) {
+			if(possibleTile == null || possibleTile.isOccupied()) {
 				continue;
 			}else {
 				
 				System.out.println("possible kill move: " + possibleDir.get(i)+ " " +selectedTile.getPosition()+ " to "+ possibleTile.getPosition());
-				//TOPright have problem
-				//BOTRIGHT -> TOPRIGHT
 				midTile = getMidTile(p.getSelectPiece(), possibleTile);
 				
+				//
 				if(midTile.isOccupied()) {
 					if(midTile.getPiece().getOwner() != p) {
-						System.out.println( p + " MUST KILL !!");
 						killList.add(possibleTile);
 						flag = true;
 					}	
@@ -327,13 +327,15 @@ public class View extends JFrame implements Runnable{
 		
 		//if player must kill piece, they can only move to the certain tile in killList.
 		if(mustKillCheck(currentTile, p)) {
-			
-			setGameInfoLabel("You must kill the piece you can kill");
-			
+
 			//if player must kill and it select correct tile, return true
 			if(killList.contains(targetTile)) {
 				return true;
+				
+			//if player must kill some piece, not selectTile is not in killList
 			}else {
+				
+				setGameInfoLabel("You must kill the piece you can kill");
 				return false;
 			}
 		
@@ -366,6 +368,11 @@ public class View extends JFrame implements Runnable{
 				
 			//if user click a tile that has no piece
 			}else {
+				
+				if(!mustKillMove(clickedTile, player)) {
+					return;
+				}
+				
 				if(player.getSelectPiece() != null) {
 					
 					//if a normal move is successful, move the selected peice to the clickedTile
@@ -384,8 +391,6 @@ public class View extends JFrame implements Runnable{
 					}
 					
 				}
-
-				player.unselect();
 				
 			}
 		if(player.getSelectPiece() != null) {

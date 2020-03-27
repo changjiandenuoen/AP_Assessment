@@ -56,7 +56,7 @@ public class Position implements Serializable{
 
 		
 	public boolean isOutOfBound() {
-		if(x > 7 || y > 7) {
+		if(x > 7 || y > 7 || x < 0 || y < 0) {
 			return true;
 		}else {
 			return false;
