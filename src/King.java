@@ -1,4 +1,4 @@
-
+import java.util.ArrayList;
 
 public class King extends Piece{
 	
@@ -27,6 +27,15 @@ public class King extends Piece{
 		}else {
 			return false;
 		}
+	}
+	
+	protected ArrayList<Dir> getAllDir(){
+		ArrayList<Dir> dirList = new ArrayList<Dir>();
+		dirList.add(Dir.TOPLEFT);
+		dirList.add(Dir.TOPRIGHT);
+		dirList.add(Dir.BOTLEFT);
+		dirList.add(Dir.BOTRIGHT);
+		return dirList;
 	}
 
 }

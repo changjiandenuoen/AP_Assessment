@@ -11,10 +11,16 @@ import java.net.Socket;
 public class Player {
 	private int id;
 	private boolean turn;
+	//when player have to kill a peice, this will be true
+	private boolean mustKill;
+	//when player already kill a piece, and it can continue kill another one.
+	private boolean killingSpree;
 	private Piece selectPiece;
 	private Socket socket;
 	
 	public Player(Socket socket, int i) {
+		mustKill = false;
+		killingSpree = false;
 		this.socket = socket;
 		this.id = i;
 		this.turn = false;
@@ -44,6 +50,19 @@ public class Player {
 	public void setSocket(Socket socket) {
 		this.socket = socket;
 	}
+	public boolean isMustKill() {
+		return mustKill;
+	}
+	public void setMustKill(boolean mustKill) {
+		this.mustKill = mustKill;
+	}
+	public boolean isKillingSpree() {
+		return killingSpree;
+	}
+	public void setKillingSpree(boolean killingSpree) {
+		this.killingSpree = killingSpree;
+	}
+	
 	
 	@Override
 	public String toString() {
@@ -104,6 +123,8 @@ public class Player {
 			return selectPiece.move(direction);
 			
 		}
+		
+		
 		return true;
 	}
 	
@@ -133,7 +154,12 @@ public class Player {
 			oos.writeObject(null);
 			oos.flush();
 //			System.out.println(this.toString() + " send postion "+ cmd );
-			endTurn();
+			
+			//if active player is killingspree, do not end turn.
+			if(!killingSpree) {
+				endTurn();
+			}
+			
 		}catch (IOException e) {
 			e.printStackTrace();
 		}finally {
@@ -159,7 +185,14 @@ public class Player {
 			ois = new ObjectInputStream(bis);
 			cmd = (Command) ois.readObject();
 //			System.out.println(this.toString() + " recieve Command "+ cmd );
-			setTurn(true);
+			
+			//if the other player is killing spree, then do not change turn.
+			if(cmd.isKillingSpree()) {
+				setTurn(false);
+			}else {
+				setTurn(true);
+			}
+			
 
 		}catch (IOException e) {
 			e.printStackTrace();

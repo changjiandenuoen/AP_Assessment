@@ -2,14 +2,15 @@
 
 public enum Dir {
 	TOPLEFT(-1, -1), 
-	TOPRIGHT(1, -1), 
-	BOTLEFT(-1, 1), 
+	TOPRIGHT(-1, 1), 
+	BOTLEFT(1, -1), 
 	BOTRIGHT(1, 1);
 	
 	private int x;
 	private int y;
 	private String name;
 	
+
 	private Dir(int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -38,6 +39,7 @@ public enum Dir {
 		if(distance <= 0) {
 			return null;
 		}
+		
 
 		if (x == -1*distance && y == - 1*distance) {
 			return TOPLEFT;

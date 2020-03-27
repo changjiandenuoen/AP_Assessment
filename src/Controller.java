@@ -29,7 +29,6 @@ public class Controller extends MouseAdapter {
 			System.out.println(player + " - " + player.isTurn());
 			return;
 		}
-		
 		//get the click position
 		Tile clickedTile = null;
 		

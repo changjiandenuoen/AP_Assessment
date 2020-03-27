@@ -1,10 +1,13 @@
 
+import java.util.ArrayList;
+
 
 public abstract class Piece {
 	
 	protected Player owner;
 	protected boolean selected;
 	protected Position position;
+	protected ArrayList<Dir> dirList;
 	
 	//getter and setter
 	public Player getOwner() {
@@ -25,6 +28,12 @@ public abstract class Piece {
 	public void setPosition(Position position) {
 		this.position = position;
 	}
+	public ArrayList<Dir> getDirList() {
+		return dirList =getAllDir();
+	}
+	public void setDirList(ArrayList<Dir> dirList) {
+		this.dirList = dirList;
+	}
 	public abstract String getType();
 
 	//	Constructor
@@ -32,6 +41,7 @@ public abstract class Piece {
 		this.position = new Position(x, y);
 		this.selected = false;
 		this.owner = p;
+		
 
 	}
 	public Piece(Position pos, Player p) {
@@ -43,6 +53,7 @@ public abstract class Piece {
 	
 	public abstract boolean move(Dir direction);
 	
+	protected abstract ArrayList<Dir> getAllDir();
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + "  " + position;

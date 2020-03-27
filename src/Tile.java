@@ -13,6 +13,7 @@ public class Tile extends JLabel{
 	public Position getPosition() {
 		return position;
 	}
+	
 	public void setPosition(Position position) {
 		this.position = position;
 	}
@@ -82,5 +83,6 @@ public class Tile extends JLabel{
 			this.setIcon(new ImageIcon(resource.getPathMap().get(pieceType)));
 		}	
 	}
+
 	
 }

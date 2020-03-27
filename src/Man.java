@@ -1,4 +1,4 @@
-
+import java.util.ArrayList;
 
 public class Man extends Piece {
 	
@@ -31,6 +31,23 @@ public class Man extends Piece {
 		}else {
 			return false;
 		}
+	}
+	
+	/**
+	 * return a list of direction that it can move
+	 */
+	@Override
+	protected ArrayList<Dir> getAllDir(){
+		ArrayList<Dir> dirList = new ArrayList<Dir>();
+		if(owner.getId() == 1) {
+			dirList.add(Dir.TOPLEFT);
+			dirList.add(Dir.TOPRIGHT);
+		}
+		if(owner.getId() == 2) {
+			dirList.add(Dir.BOTLEFT);
+			dirList.add(Dir.BOTRIGHT);
+		}
+		return dirList;
 	}
 
 }

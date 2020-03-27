@@ -41,8 +41,27 @@ public class Position implements Serializable{
 			x += direction.getX(distance);
 			y += direction.getY(distance);
 	}
+	
+	/**
+	 * get a postion based on a given position, direction, and distance.
+	 * @param direction
+	 * @param distance
+	 * @return
+	 */
+	public Position getByDir(Dir direction, int distance) {
+		Position pos = new Position(x, y);
+		pos.change(direction, distance);
+		return pos;
+	}
 
-
+		
+	public boolean isOutOfBound() {
+		if(x > 7 || y > 7) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 	/**
 	 *  determine whether two positions have a certain diagdistance 
 	 * @param pos the position need to compare 
@@ -57,14 +76,14 @@ public class Position implements Serializable{
 		}
 	}
 	
-	//for examle this 0,0 that 1,1 Dir: top-right
+	//for examle this 0,0 that 1,1 Dir: bottom-right
 	public Dir checkDirection(Position pos, int distance) {
 		int disX = pos.getX() - x;
 		int disY = pos.getY() - y;
 
 		return Dir.getDirByPos(disX, disY, distance);
 	}
-	
+
 	/**
 	 * get the mid position of two position
 	 * @param pos
