@@ -83,6 +83,4 @@ public class Tile extends JLabel{
 			this.setIcon(new ImageIcon(resource.getPathMap().get(pieceType)));
 		}	
 	}
-
-	
 }

@@ -39,5 +39,7 @@ public class Controller extends MouseAdapter {
 
 		view.turnMove(player, clickedTile.getPosition());
 
+		
+
 	}
 }

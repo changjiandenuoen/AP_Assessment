@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,7 +29,6 @@ public class View extends JFrame implements Runnable{
 	private JLabel turnLabel;
 	private JLabel 	selectedLabel;
 	private JLabel 	gameInfoLabel;
-	private ArrayList<Tile> killList;
 	
 	
 	public Player getOppoPlayer() {
@@ -79,9 +77,6 @@ public class View extends JFrame implements Runnable{
 	}
 	public Tile[][] getInitialBoard() {
 		return initialBoard;
-	}
-	public ArrayList<Tile> getKillList() {
-		return killList;
 	}
 
 	//Constructor
@@ -206,16 +201,16 @@ public class View extends JFrame implements Runnable{
             	
             	
             	//initialize the pieces
-//                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
-            	if(((i == 2)&& j %2 == 1)) {
+                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
+//            	if(((i == 2)&& j %2 == 1)) {
                 	board[i][j] = new Tile(i,j,p2);
                 	
                 	board[i][j].occupy(board[i][j].getPiece());
                 	 
                 }
                 
-//                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
-                if(((i == 5 )&& j%2 == 0) ){
+                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
+//                if(((i == 5 )&& j%2 == 0) ){
                 	board[i][j] = new Tile(i,j,p1);
                 	board[i][j].occupy(board[i][j].getPiece());
                 }
@@ -248,13 +243,30 @@ public class View extends JFrame implements Runnable{
 	 * 1. check whether the game is end
 	 * 2. check whether the player can continuously kill other pieces
 	 */
-	public void boardCheck(Tile tile, Player p){
-
+	public void boardCheck(Player p){
+	//TODO syso testing
+		boolean isMustKill = false;
+		 
+		if(p.getSocket() == null || p.getSelectPiece() == null) {
+			return;
+		}
+		
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
-
+				
+				if(board[i][j].getPiece() !=null && board[i][j].getPiece().getOwner() == p) {
+					if(mustKillCheck(board[i][j], p)) {
+						isMustKill = true;
+						break;
+					}
+				}
 			}
 		}
+		
+		if(isMustKill) {
+			p.setMustKill(true);
+		}
+			
 	}
 	
 	
@@ -270,14 +282,13 @@ public class View extends JFrame implements Runnable{
 	public boolean mustKillCheck(Tile selectedTile, Player p) {
 	//TODO: syso testing
 		
-		//everytime start a mustKillCheck, refresh killList
-		//killList contain all possible Tile that player can move when they must kill.
-		killList = new ArrayList<Tile>();
 		boolean flag = false;
 		
 		//possibleDir List contain all possible direction the active player can move to
 		//by using these direction, this method can check whether there is a piece that can kill
-		ArrayList<Dir> possibleDir = p.getSelectPiece().getDirList();
+		ArrayList<Dir> possibleDir = selectedTile.getPiece().getDirList();
+		
+		//TODO: p.getSelectPice nullpointer
 		Tile possibleTile;
 		
 		for (int i = 0; i <possibleDir.size(); i++) {
@@ -290,66 +301,24 @@ public class View extends JFrame implements Runnable{
 				continue;
 			}else {
 				
-				System.out.println("possible kill move: " + possibleDir.get(i)+ " " +selectedTile.getPosition()+ " to "+ possibleTile.getPosition());
-				midTile = getMidTile(p.getSelectPiece(), possibleTile);
+				midTile = getMidTile(selectedTile.getPiece(), possibleTile);
 				
-				//
 				if(midTile.isOccupied()) {
 					if(midTile.getPiece().getOwner() != p) {
-						killList.add(possibleTile);
+						System.out.println("possible kill move: " + possibleDir.get(i)+ " " +selectedTile.getPosition()+ " to "+ possibleTile.getPosition());
 						flag = true;
 					}	
 				}
-			}
-			
-			
+			}	
 		}
 		return flag;
-	}
-	
-	/**
-	 * if player must kill, it killed, if player do not need to kill, nothing happens
-	 * this method just check whether player move correctly when they must kill smt
-	 * 
-	 * @param targetTile the tile player clicked when they already select pieces
-	 * @param p the active player
-	 * @return if everthing goes right, return true;
-	 */
-	public boolean mustKillMove(Tile targetTile, Player p) {
-		
-		if(p.getSocket() == null) {
-			return true;
-		}
-		
-		//find the tile where player select the piece.
-		Position selectPos = p.getSelectPiece().getPosition();
-		Tile currentTile = board[selectPos.getX()][selectPos.getY()];
-		
-		//if player must kill piece, they can only move to the certain tile in killList.
-		if(mustKillCheck(currentTile, p)) {
-
-			//if player must kill and it select correct tile, return true
-			if(killList.contains(targetTile)) {
-				return true;
-				
-			//if player must kill some piece, not selectTile is not in killList
-			}else {
-				
-				setGameInfoLabel("You must kill the piece you can kill");
-				return false;
-			}
-		
-		//if player have no peice to kill, return true.
-		//which means they can move as they want.
-		}else {
-			return true;
-		}
 	}
 
 	
 	public void turnMove(Player player, Position targetPos) {
 		Tile clickedTile = board[targetPos.getX()][targetPos.getY()];
 		Piece clickedPiece = clickedTile.getPiece();
+		
 		
 		//if user click a tile that has a piece
 			if(clickedTile.isOccupied()) {
@@ -365,18 +334,18 @@ public class View extends JFrame implements Runnable{
 				}else if(player.getSelectPiece() == clickedPiece ){
 					player.unselect();
 				}
+		
+				//check whether the whole board contian a mustKill?
+				//if so, set mustKill to true
+				boardCheck(player);
+				System.out.println(player + " is mustKill? " + player.isMustKill());
 				
 			//if user click a tile that has no piece
 			}else {
 				
-				if(!mustKillMove(clickedTile, player)) {
-					return;
-				}
-				
-				if(player.getSelectPiece() != null) {
+				if(player.getSelectPiece() != null ) {
 					
-					//if a normal move is successful, move the selected peice to the clickedTile
-					if(player.tryMove(clickedTile)) {
+					if(player.tryMove(clickedTile) && !player.isMustKill()) {
 
 						movePiece(player, clickedTile);
 
@@ -389,9 +358,7 @@ public class View extends JFrame implements Runnable{
 					if(player.tryUpGrade(clickedTile)){
 						upgradePiece(player, clickedTile);
 					}
-					
-				}
-				
+				}	
 			}
 		if(player.getSelectPiece() != null) {
 			getSelectedLabel().setText(player.getSelectPiece().toString());
@@ -435,7 +402,7 @@ public class View extends JFrame implements Runnable{
 		cleanTile(selectedPiece.getPosition());
 		selectedPiece.setPosition(targetTile.getPosition());
 		targetTile.occupy(p.getSelectPiece());
-
+		p.unselect();
 	}
 	
 	/**
@@ -453,6 +420,10 @@ public class View extends JFrame implements Runnable{
 		if(midPiece.getOwner() != p) {
 			movePiece(p, targetTile);
 			cleanTile(midPiece.getPosition());
+		}
+		
+		if(p.isMustKill()) {
+			p.setMustKill(false);
 		}
 		
 	}
@@ -492,7 +463,6 @@ public class View extends JFrame implements Runnable{
 		if(Math.abs(x1-x2) == 2 && Math.abs(y1-y2) == 2) {
 			return board[ (x1 + x2) /2][(y1 + y2)/2];
 		}else {
-			System.out.println("two tiles are too close or too far");
 			return null;
 		}
 	}
