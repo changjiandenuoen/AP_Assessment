@@ -17,10 +17,13 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 	
 	@Override
 	protected Void doInBackground() throws Exception {
+		Command cmd;
 		while(true) {
 
 			if(socket.getInputStream() != null) {
-				publish(player.recieveFromServer());
+				if((cmd =player.recieveFromServer()) != null) {
+					publish(cmd);
+				}
 			}
 		}
 	}

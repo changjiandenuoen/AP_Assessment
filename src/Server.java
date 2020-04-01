@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Server extends Thread{
@@ -16,108 +18,45 @@ public class Server extends Thread{
 	public static void main(String[] args) {
 		new Server().run();
 	}
-	
-	
-	
+
 	static Player p1;
 	static Player p2;
 	private static ServerSocket ss;
-	private static Socket s1;
-	private static Socket s2;
+	private static HashMap<Integer, Session> sessionMap;
+
 	private static int PORT = 9999;
 	
 	
 	@Override
 	public void run() {
+
 		try {	
 			
 			ss=new ServerSocket(PORT);
+			sessionMap = new HashMap<Integer, Session>();
+			ArrayList<Socket> s1 = new ArrayList<Socket>();
+			ArrayList<Socket> s2 = new ArrayList<Socket>();
+			int sessionId = 0;
 			
-			//this socket is sent from AppMain1
-			s1 = ss.accept();
-			p1 = new Player(s1, 1);
-			OutputStream output = s1.getOutputStream();
-			output.write(1);
-			
-			//this socket is sent from AppMain2
-			s2 = ss.accept();
-			p2 = new Player(s2, 2);
-			output = s2.getOutputStream();
-			output.write(2);
-
-			System.out.println("Now we have two players, game start!");
 			while(true) {
+				s1.add(ss.accept());
+				OutputStream output = s1.get(sessionId).getOutputStream();
+				output.write(1);
 
+				s2.add(ss.accept());
+				output = s2.get(sessionId).getOutputStream();
+				output.write(2);
 				
-				transit(s1, s2);
-				transit(s2, s1);
-
+				Session session = new Session(s1.get(sessionId), s2.get(sessionId), sessionId);
+				sessionMap.put(sessionId, new Session(s1.get(sessionId), s2.get(sessionId), sessionId));
+				System.out.println("two client is connected to the server");
+				System.out.println("A new session is start! session id is " + sessionId);
+				session.start();
+				sessionId++;
 			}
-			
 			
 		}catch(Exception e) {
 			e.printStackTrace();
-		}finally {
-			try {
-				s1.close();
-				s2.close();
-				ss.close();
-			} catch (Exception e) {
-
-				e.printStackTrace();
-			}
 		}
 	}
-	
-	/**
-	 * Server receive the object from s1, and send it to s2
-	 * @param s1
-	 * @param s2
-	 */
-	private static void transit(Socket s1, Socket s2) {
-		InputStream is = null;
-		OutputStream os = null;
-
-		BufferedInputStream bis = null;
-		BufferedOutputStream bos = null;
-		
-		ObjectInputStream ois = null;
-		ObjectOutputStream oos = null;
-		
-		Command cmd;
-		
-		try {
-		
-			is = s1.getInputStream();
-			bis = new BufferedInputStream(is);
-			if(bis.available() >0) {
-				ois = new ObjectInputStream(bis);
-				cmd= (Command) ois.readObject();
-//				System.out.println("recieve and send COMMAND " + cmd + " from client");
-	
-			}else {
-				return;
-			}
-			
-			os = s2.getOutputStream();
-			bos = new BufferedOutputStream(os);
-			oos = new ObjectOutputStream(bos);
-			oos.writeObject(cmd);
-			oos.flush();
-		} catch (EOFException e) {
-
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}finally {
-			is = null;
-			os = null;
-			bis = null;
-			bos = null;
-			ois = null;
-			oos = null;
-		}
-	}
-	
 }

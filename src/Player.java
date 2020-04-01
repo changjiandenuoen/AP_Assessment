@@ -142,6 +142,10 @@ public class Player {
 	
 	
 	public void sendToServer(Command cmd) {
+		if (socket == null) {
+			return;
+		}
+		
 		OutputStream os = null;
 		BufferedOutputStream bos;
 		ObjectOutputStream oos = null;
@@ -182,8 +186,12 @@ public class Player {
 		try {
 			is = socket.getInputStream();
 			bis = new BufferedInputStream(is);
-			ois = new ObjectInputStream(bis);
-			cmd = (Command) ois.readObject();
+			if(bis.available() >0) {
+				ois = new ObjectInputStream(bis);
+				cmd= (Command) ois.readObject();
+			}else {
+				return null;
+			}
 //			System.out.println(this.toString() + " recieve Command "+ cmd );
 			
 			//if the other player is killing spree, then do not change turn.

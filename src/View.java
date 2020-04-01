@@ -396,8 +396,8 @@ public class View extends JFrame implements Runnable{
 	
 	/**
 	 * the player will move the selected peice to the targetTile
-	 * if the player is a active player, after each move they will send a command to server.
-	 * @param p
+	 * this method will used by movePiece and killPiece method
+	 * @param player
 	 * @param targetTile
 	 */
 	private void movePieceToTile(Player p, Tile targetTile) {
@@ -421,9 +421,7 @@ public class View extends JFrame implements Runnable{
 	public void movePiece(Player p, Tile targetTile) {
 		Tile selectedTile = getSelectedTile(p);
 		movePieceToTile(p, targetTile);
-		if(p.getSocket() != null) {
-			p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
-		}
+		p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
 		p.unselect();
 	}
 	
@@ -459,9 +457,8 @@ public class View extends JFrame implements Runnable{
 			p.unselect();
 		}
 		
-		if(p.getSocket() != null) {
-			p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
-		}
+		p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
+
 
 	}
 	

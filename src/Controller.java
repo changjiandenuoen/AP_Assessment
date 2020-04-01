@@ -4,7 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-public class Controller extends MouseAdapter {
+public class Controller extends MouseAdapter{
 	
 	private View view;
 	private Player player;
@@ -40,4 +40,6 @@ public class Controller extends MouseAdapter {
 		view.turnMove(player, clickedTile.getPosition());
 
 	}
+	
+	
 }
