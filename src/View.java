@@ -360,15 +360,26 @@ public class View extends JFrame implements Runnable{
 			}else {
 				
 				if(player.getSelectPiece() != null ) {
+					Position selectedPos = player.getSelectPiece().getPosition();
+					Tile selectedTile = board[selectedPos.getX()][selectedPos.getY()];
 					
 					if(player.tryMove(clickedTile) && !player.isMustKill()) {
-
+					
 						movePiece(player, clickedTile);
+						if(player.getSocket() != null) {
+							player.sendToServer(new Command(selectedTile.getPosition(), clickedTile.getPosition(),player.isKillingSpree()));
+						}
+						player.unselect();
 
 						
 					}else if(player.tryKill(clickedTile)) {
 						killPiece(player, clickedTile);
-						
+						if(player.getSocket() != null) {
+							player.sendToServer(new Command(selectedTile.getPosition(), clickedTile.getPosition(),player.isKillingSpree()));
+						}
+						if(!player.isKillingSpree()) {
+							player.unselect();
+						}
 					}	
 					//if a upgrade move is successful, upgrade the selected piece of the player.
 					if(player.tryUpGrade(clickedTile)){
@@ -411,14 +422,13 @@ public class View extends JFrame implements Runnable{
 		
 		Piece selectedPiece = p.getSelectPiece();	
 
-		if(p.getSocket() != null) {
-			p.sendToServer(new Command(selectedPiece.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
-		}
+//		if(p.getSocket() != null) {
+//			p.sendToServer(new Command(selectedPiece.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
+//		}
 		gameInfoLabel.setText(p + " move " + selectedPiece + " to " + targetTile.getPosition());
 		cleanTile(selectedPiece.getPosition());
 		selectedPiece.setPosition(targetTile.getPosition());
 		targetTile.occupy(p.getSelectPiece());
-		p.unselect();
 	}
 	
 	/**
