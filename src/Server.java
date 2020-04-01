@@ -47,10 +47,7 @@ public class Server extends Thread{
 
 			System.out.println("Now we have two players, game start!");
 			while(true) {
-				if(s1.isClosed() && s2.isClosed()) {
-					ss.close();
-					System.exit(0);
-				}
+
 				
 				transit(s1, s2);
 				transit(s2, s1);

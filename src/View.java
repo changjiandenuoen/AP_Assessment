@@ -282,10 +282,7 @@ public class View extends JFrame implements Runnable{
 			return false;
 		}
 		
-		Position postion = p.getSelectPiece().getPosition();
-		Tile selectedTile = board[postion.getX()][postion.getY()];
-		
-		return mustKillCheck(selectedTile, p);
+		return mustKillCheck(getSelectedTile(p), p);
 	}
 	
 	/**
@@ -305,8 +302,10 @@ public class View extends JFrame implements Runnable{
 		//by using these direction, this method can check whether there is a piece that can kill
 		ArrayList<Dir> possibleDir = selectedTile.getPiece().getDirList();
 		
+		//This is the tiles that player can move to 
 		Tile possibleTile;
 		
+		//check all possible directions and find out all possibleTiles
 		for (int i = 0; i <possibleDir.size(); i++) {
 
 			possibleTile = getTileByDir(selectedTile, possibleDir.get(i), 2);
@@ -360,31 +359,16 @@ public class View extends JFrame implements Runnable{
 			}else {
 				
 				if(player.getSelectPiece() != null ) {
-					Position selectedPos = player.getSelectPiece().getPosition();
-					Tile selectedTile = board[selectedPos.getX()][selectedPos.getY()];
-					
+
 					if(player.tryMove(clickedTile) && !player.isMustKill()) {
 					
 						movePiece(player, clickedTile);
-						if(player.getSocket() != null) {
-							player.sendToServer(new Command(selectedTile.getPosition(), clickedTile.getPosition(),player.isKillingSpree()));
-						}
-						player.unselect();
-
-						
+	
 					}else if(player.tryKill(clickedTile)) {
+						
 						killPiece(player, clickedTile);
-						if(player.getSocket() != null) {
-							player.sendToServer(new Command(selectedTile.getPosition(), clickedTile.getPosition(),player.isKillingSpree()));
-						}
-						if(!player.isKillingSpree()) {
-							player.unselect();
-						}
+
 					}	
-					//if a upgrade move is successful, upgrade the selected piece of the player.
-					if(player.tryUpGrade(clickedTile)){
-						upgradePiece(player, clickedTile);
-					}
 				}	
 			}
 		if(player.getSelectPiece() != null) {
@@ -416,19 +400,31 @@ public class View extends JFrame implements Runnable{
 	 * @param p
 	 * @param targetTile
 	 */
-	public void movePiece(Player p, Tile targetTile) {
+	private void movePieceToTile(Player p, Tile targetTile) {
 		//check whether player select the right Tile to move
 		// when they must kill something
 		
 		Piece selectedPiece = p.getSelectPiece();	
 
-//		if(p.getSocket() != null) {
-//			p.sendToServer(new Command(selectedPiece.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
-//		}
 		gameInfoLabel.setText(p + " move " + selectedPiece + " to " + targetTile.getPosition());
 		cleanTile(selectedPiece.getPosition());
 		selectedPiece.setPosition(targetTile.getPosition());
 		targetTile.occupy(p.getSelectPiece());
+		
+		//after move, if the selectedPiece reach the end of board, upgrade it.
+		if(p.tryUpGrade(targetTile)){
+			upgradePiece(p, targetTile);
+		}
+	
+	}
+	
+	public void movePiece(Player p, Tile targetTile) {
+		Tile selectedTile = getSelectedTile(p);
+		movePieceToTile(p, targetTile);
+		if(p.getSocket() != null) {
+			p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
+		}
+		p.unselect();
 	}
 	
 	/**
@@ -438,13 +434,15 @@ public class View extends JFrame implements Runnable{
 	 */
 	public void killPiece(Player p, Tile targetTile) {
 		Piece midPiece = getMidTile(p.getSelectPiece(), targetTile).getPiece();
+		Tile selectedTile = getSelectedTile(p);
+		movePieceToTile(p, targetTile);
 		
 		if(midPiece == null) {
 			return;
 		}
 		
 		if(midPiece.getOwner() != p) {
-			movePiece(p, targetTile);
+			movePieceToTile(p, targetTile);
 			cleanTile(midPiece.getPosition());
 		}
 		
@@ -458,7 +456,13 @@ public class View extends JFrame implements Runnable{
 			p.setKillingSpree(true);
 		}else {
 			p.setKillingSpree(false);
+			p.unselect();
 		}
+		
+		if(p.getSocket() != null) {
+			p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
+		}
+
 	}
 	
 	/**
@@ -518,7 +522,21 @@ public class View extends JFrame implements Runnable{
 		}else {
 			return null;
 		}
-		
+	}
+	
+	/**
+	 * get the tile where player selected piece is.
+	 * @param p
+	 * @return
+	 */
+	public Tile getSelectedTile(Player p) {
+		if(p.getSelectPiece() == null) {
+			return null;
+		}else {
+			Position selectedPos = p.getSelectPiece().getPosition();
+			return board[selectedPos.getX()][selectedPos.getY()];			
+		}
+
 	}
 	
 	
