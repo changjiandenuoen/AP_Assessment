@@ -13,6 +13,7 @@ import javax.swing.border.Border;
 
 public class View extends JFrame implements Runnable{
 	
+	private static final long serialVersionUID = 1L;
 	public static final int unit = 40;
 	public static final int BoardWidth = 8;
 	public static final int BoardHeight = 8;
@@ -21,10 +22,12 @@ public class View extends JFrame implements Runnable{
 	private Resource resource;
 	private Tile[][] board;
 	private Tile[][] initialBoard;
+	
 	//player who control black
 	private Player p1;
 	//player who control white
 	private Player p2;
+	
 	private JPanel boardPanel;
 	private JLabel turnLabel;
 	private JLabel 	selectedLabel;
@@ -244,7 +247,6 @@ public class View extends JFrame implements Runnable{
 	 * 2. check whether the player can continuously kill other pieces
 	 */
 	public void boardCheck(Player p){
-	//TODO syso testing
 		boolean isMustKill = false;
 		 
 		if(p.getSocket() == null || p.getSelectPiece() == null) {
@@ -257,8 +259,7 @@ public class View extends JFrame implements Runnable{
 				if(board[i][j].getPiece() !=null && board[i][j].getPiece().getOwner() == p) {
 					if(mustKillCheck(board[i][j], p)) {
 						isMustKill = true;
-						break;
-					}
+					}	
 				}
 			}
 		}
@@ -268,7 +269,24 @@ public class View extends JFrame implements Runnable{
 		}
 			
 	}
-	
+
+	/**
+	 * If player selected piece have chance to kill other piece
+	 * then, return true, else return false;
+	 * @param p
+	 * @return
+	 */
+	public boolean multiKillCheck(Player p) {
+		
+		if(p.getSocket() == null || p.getSelectPiece() == null) {
+			return false;
+		}
+		
+		Position postion = p.getSelectPiece().getPosition();
+		Tile selectedTile = board[postion.getX()][postion.getY()];
+		
+		return mustKillCheck(selectedTile, p);
+	}
 	
 	/**
 	 * in the possible direction of active player from the current tile
@@ -280,7 +298,6 @@ public class View extends JFrame implements Runnable{
 	 * @return true if there is a mustKill, else return false
 	 */
 	public boolean mustKillCheck(Tile selectedTile, Player p) {
-	//TODO: syso testing
 		
 		boolean flag = false;
 		
@@ -288,7 +305,6 @@ public class View extends JFrame implements Runnable{
 		//by using these direction, this method can check whether there is a piece that can kill
 		ArrayList<Dir> possibleDir = selectedTile.getPiece().getDirList();
 		
-		//TODO: p.getSelectPice nullpointer
 		Tile possibleTile;
 		
 		for (int i = 0; i <possibleDir.size(); i++) {
@@ -318,7 +334,7 @@ public class View extends JFrame implements Runnable{
 	public void turnMove(Player player, Position targetPos) {
 		Tile clickedTile = board[targetPos.getX()][targetPos.getY()];
 		Piece clickedPiece = clickedTile.getPiece();
-		
+
 		
 		//if user click a tile that has a piece
 			if(clickedTile.isOccupied()) {
@@ -352,7 +368,7 @@ public class View extends JFrame implements Runnable{
 						
 					}else if(player.tryKill(clickedTile)) {
 						killPiece(player, clickedTile);
-
+						
 					}	
 					//if a upgrade move is successful, upgrade the selected piece of the player.
 					if(player.tryUpGrade(clickedTile)){
@@ -394,7 +410,7 @@ public class View extends JFrame implements Runnable{
 		// when they must kill something
 		
 		Piece selectedPiece = p.getSelectPiece();	
-		
+
 		if(p.getSocket() != null) {
 			p.sendToServer(new Command(selectedPiece.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
 		}
@@ -425,7 +441,14 @@ public class View extends JFrame implements Runnable{
 		if(p.isMustKill()) {
 			p.setMustKill(false);
 		}
-		
+
+		if(multiKillCheck(p)) {
+			System.out.println(p + " is killing spree!");
+			p.setMustKill(true);
+			p.setKillingSpree(true);
+		}else {
+			p.setKillingSpree(false);
+		}
 	}
 	
 	/**
@@ -478,7 +501,6 @@ public class View extends JFrame implements Runnable{
 	 * @return
 	 */
 	public Tile getTileByDir(Tile tile, Dir direction, int distance) {
-	//TODO: Testing syso
 		
 		Position targetPos = tile.getPosition().getByDir(direction, distance);
 		if(!targetPos.isOutOfBound()) {
