@@ -9,6 +9,7 @@ public class Client extends Thread{
 	public static void main(String[] args) {
 		new Client().run();
 	}
+
 	
 	private final int port = 9999;
 	private int id;
@@ -22,7 +23,7 @@ public class Client extends Thread{
 			s = new Socket("127.0.0.1",port); 
 			id = s.getInputStream().read();
 			player = new Player(s, id);
-			System.out.println(player + " successfully connect to server" );
+			System.out.println(player + "successfully connect to server" );
 			
 			View view = new View(player);
 			SwingUtilities.invokeLater(view);

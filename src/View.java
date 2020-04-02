@@ -147,16 +147,16 @@ public class View extends JFrame implements Runnable{
 		this.add(mainPanel);
 	}
 	
-
-	public void initInfo() {
-		serverLabel.setText("Server now start a new game!");
-		selectedLabel.setText("This Label presents the selections! Please select a piece!"); 
-		gameInfoLabel.setText("This Label presents the game infoamtion"); 
-	}
 	
+	/**
+	 * 
+	 * @param p the active player
+	 * @param cmdType the type of command recieved
+	 */ 
 	public void gameEnd(Player p, CommandType cmdType) {
 		if(cmdType == CommandType.WIN) {
 			getOppoPlayer().setWin(true);
+			p.sendToServer(new Command(false));
 			setGameInfoLabel("You Lose! Game Over!");
 		}
 		
@@ -164,6 +164,7 @@ public class View extends JFrame implements Runnable{
 			p.setWin(true);
 			setGameInfoLabel("You win!");
 		}
+		
 		removeAllMouseListenerOnBoard();
 	}
 	
@@ -174,6 +175,7 @@ public class View extends JFrame implements Runnable{
             }
         }
 	}
+	
 
 	//Helper Methods
 	
@@ -345,12 +347,18 @@ public class View extends JFrame implements Runnable{
 	 * @return
 	 */
 	public boolean boardWinCheck(Player p) {
+		
+		boolean canMove = false;
+		
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
 				
 				if(board[i][j].isOccupied() && board[i][j].getPiece().getOwner() != p) {
 					return false;
+				}else {
+					//TODO:
 				}
+				
 			}
 		}
 		return true;
@@ -421,7 +429,7 @@ public class View extends JFrame implements Runnable{
 	}
 	
 	/**
-	 * the player will move the selected peice to the targetTile
+	 * the player will move the selected piece to the targetTile
 	 * this method will used by movePiece and killPiece method
 	 * @param player
 	 * @param targetTile
@@ -431,8 +439,7 @@ public class View extends JFrame implements Runnable{
 		// when they must kill something
 		
 		Piece selectedPiece = p.getSelectPiece();	
-
-		gameInfoLabel.setText(p + " move " + selectedPiece + " to " + targetTile.getPosition());
+		
 		cleanTile(selectedPiece.getPosition());
 		selectedPiece.setPosition(targetTile.getPosition());
 		targetTile.occupy(p.getSelectPiece());
@@ -452,6 +459,7 @@ public class View extends JFrame implements Runnable{
 	public void movePiece(Player p, Tile targetTile) {
 		Tile selectedTile = getSelectedTile(p);
 		movePieceToTile(p, targetTile);
+		gameInfoLabel.setText(p + " move " + selectedTile.getPosition() + " to " + targetTile.getPosition());
 		p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
 		p.unselect();
 	}
@@ -493,21 +501,23 @@ public class View extends JFrame implements Runnable{
 			p.setKillingSpree(false);
 			p.unselect();
 		}
+		gameInfoLabel.setText(p + " move " + selectedTile.getPosition() + " to " + targetTile.getPosition());
 		
 		//player must send the kill to the server
 		//if player is killing spree, game will not switch the turn.
-		p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
-		
-		//if Player is the winner after he/she kill a piece
-		//send a winner command to the server
-		if(p.isWin() && p.isActive()) {
-			System.out.println(p + " send a winner command to server");
-			Command cmd = new Command(true);
-			p.sendToServer(cmd);
-			gameEnd(p, CommandType.LOSE);
+		Command cmd = new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree());
+		if(p.isWin()) {
+			if(p.isActive()) {
+				cmd.setType(CommandType.WIN);
+				gameEnd(p, CommandType.LOSE);
+			}else {
+				gameEnd(p, CommandType.WIN);
+			}
 		}
+		p.sendToServer(cmd);
 
 	}
+	
 	
 	/**
 	 * player's selected Piece upgrade to King if they reach the top/bottom

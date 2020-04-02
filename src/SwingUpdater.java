@@ -34,10 +34,12 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 			 return;
 		 }
 		 
-		 if(cmd.getType() == CommandType.MOVE) {
+		 if(cmd.getOriPos() != null && cmd.getTargetPos() != null) {
 			view.turnMove(view.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
-		}else {
-			view.gameEnd(view.getOppoPlayer(), cmd.getType());
 		}
+		 
+		 if(cmd.getType() == CommandType.WIN || cmd.getType() == CommandType.LOSE) {
+			 view.gameEnd(player, cmd.getType());
+		 }
 	}	
 }

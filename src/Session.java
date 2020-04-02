@@ -28,14 +28,14 @@ public class Session extends Thread{
 			if(!isGameEnd) {
 				transit(s1, s2);
 			}else {
-				System.out.println("session " + id +" is End! Winner is player 1");
+				System.out.println("session" + id + "end! Winner is player 2!");
 				break;
 			}
 			
 			if(!isGameEnd) {
 				transit(s2, s1);
 			}else {
-				System.out.println("session " + id +" is End! Winner is player 2");
+				System.out.println("session" + id + "end! Winner is player 1!");
 				break;
 			}
 		}
@@ -53,41 +53,15 @@ public class Session extends Thread{
 
 		if((cmd = receiveCommand(s1)) == null) { 
 			return;
+		}else {
+			System.out.println("server recieve a " + cmd.getType() + " command from" + s1 );
 		}
-		
+		sendCommand(s2, cmd);
 		
 		if(cmd.getType() == CommandType.LOSE || cmd.getType() == CommandType.WIN) {
-			System.out.println("server recieve a game end command");
 			isGameEnd = true;
 		}
-		
-		sendCommand(s2, cmd);
 	}
-	
-	/**
-	 * if one client is disconnection, then the session autometically end
-	 * the winner is the player at another client !
-	 * @param socket the socket who disconnect
-	 * @return true means s1 disconnect and s2 win
-	 */
-//	private Boolean autoLose(Socket s1, Socket s2) {
-//		if(s1.isClosed()) {
-//			
-//			//generate a lose type of command and send to another client
-//			//indicates this player is lose
-//			Command cmd = new Command(false);
-//			sendCommand(s2, cmd);
-//			isGameEnd = true;
-//			try {
-//				s2.close();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//			return true;
-//		}else {
-//			return false;
-//		}
-//	}
 	
 	
 	private Command receiveCommand(Socket sender) {
@@ -132,12 +106,7 @@ public class Session extends Thread{
 			oos.flush();
 			
 		} catch (IOException e) {
-			try {
-				reciever.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
+				e.printStackTrace();
 		} finally {
 			os = null;
 			bos = null;

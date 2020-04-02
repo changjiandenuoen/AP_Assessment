@@ -171,8 +171,7 @@ public class Player {
 			oos.writeObject(cmd);
 			oos.writeObject(null);
 			oos.flush();
-//			System.out.println(this.toString() + " send postion "+ cmd );
-			
+
 			//if active player is killingspree, do not end turn.
 			if(!killingSpree) {
 				endTurn();
