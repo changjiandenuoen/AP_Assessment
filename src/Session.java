@@ -55,7 +55,9 @@ public class Session extends Thread{
 			return;
 		}
 		
+		
 		if(cmd.getType() == CommandType.LOSE || cmd.getType() == CommandType.WIN) {
+			System.out.println("server recieve a game end command");
 			isGameEnd = true;
 		}
 		
@@ -135,6 +137,7 @@ public class Session extends Thread{
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+
 		} finally {
 			os = null;
 			bos = null;

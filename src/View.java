@@ -129,9 +129,9 @@ public class View extends JFrame implements Runnable{
 		setGrid(infoPanel, 4,1);
 		
 		
-		serverLabel = new JLabel("turn[0] : game start!");
-		selectedLabel = new JLabel("nothing selected");
-		gameInfoLabel = new JLabel("welcome to the checkers game!");
+		serverLabel = new JLabel("Server now start a new game!");
+		selectedLabel = new JLabel("Please select a piece!");
+		gameInfoLabel = new JLabel("welcome to the game! ");
 		infoPanel.add(serverLabel);
 		infoPanel.add(selectedLabel);
 		infoPanel.add(gameInfoLabel);
@@ -465,15 +465,16 @@ public class View extends JFrame implements Runnable{
 	public void killPiece(Player p, Tile targetTile) {
 		Piece midPiece = getMidTile(p.getSelectPiece(), targetTile).getPiece();
 		Tile selectedTile = getSelectedTile(p);
-		movePieceToTile(p, targetTile);
 		
 		if(midPiece == null) {
 			return;
-		}
-		
-		if(midPiece.getOwner() != p) {
+		}else {
 			movePieceToTile(p, targetTile);
-			cleanTile(midPiece.getPosition());
+			
+			if(midPiece.getOwner() != p) {
+				movePieceToTile(p, targetTile);
+				cleanTile(midPiece.getPosition());
+			}
 		}
 		
 		if(boardWinCheck(p)) {
@@ -499,8 +500,8 @@ public class View extends JFrame implements Runnable{
 		
 		//if Player is the winner after he/she kill a piece
 		//send a winner command to the server
-		if(p.isWin()) {
-			System.out.println(p + "send a winner command to server");
+		if(p.isWin() && p.isActive()) {
+			System.out.println(p + " send a winner command to server");
 			Command cmd = new Command(true);
 			p.sendToServer(cmd);
 			gameEnd(p, CommandType.LOSE);
@@ -588,6 +589,5 @@ public class View extends JFrame implements Runnable{
 	public void run() {
 		this.setVisible(true);
 	}
-	
 
 }

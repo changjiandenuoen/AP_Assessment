@@ -22,12 +22,12 @@ public class Controller extends ControllerAdapter {
 	public void mouseClicked(MouseEvent e) {
 		
 		//if its not your turn, mouse click will recieve nothing
-
 		if(!player.isTurn()) {
 			view.setGameInfoLabel("Please wait for other player move");
 			System.out.println(player + " - " + player.isTurn());
 			return;
 		}
+		
 		//get the click position
 		Tile clickedTile = null;
 		
@@ -35,10 +35,16 @@ public class Controller extends ControllerAdapter {
 		if(e.getSource() instanceof Tile) {
 			clickedTile = ((Tile) e.getSource());
 		}
+		
+		//move it
 		view.turnMove(player, clickedTile.getPosition());
 	}
 	
 	
+	/**
+	 * when user close the Jframe during the game
+	 * user will autometically lose the game as it will send a lose command to server
+	 */
 	@Override
 	public void windowClosing(WindowEvent e) {
 		
