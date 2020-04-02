@@ -37,7 +37,7 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 		 if(cmd.getType() == CommandType.MOVE) {
 			view.turnMove(view.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
 		}else {
-			view.gameEnd(player, cmd.getType());
+			view.gameEnd(view.getOppoPlayer(), cmd.getType());
 		}
 	}	
 }

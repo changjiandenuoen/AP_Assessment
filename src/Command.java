@@ -39,6 +39,7 @@ public class Command implements Serializable{
 	public void setClientType(int clientType) {
 		this.clientType = clientType;
 	}
+	
 	//constructor for move command
 	public Command(Position oriPos, Position targetPos, boolean isKillingSpree) {
 		this.type = CommandType.MOVE;
@@ -46,7 +47,8 @@ public class Command implements Serializable{
 		this.targetPos = targetPos;
 		this.isKillingSpree = isKillingSpree;
 	}
-	//constructor for lose command
+	
+	//constructor for win and lose command
 	public Command(boolean winOrLose) {
 		if(winOrLose) {
 			type = CommandType.WIN;
