@@ -33,6 +33,7 @@ public class Session extends SwingWorker<Void, Void>{
 	/**
 	 * Server receives the command from s1, and send it to s2
 	 * if the command is LOSE or WIN type, set isGameEnd to be true
+	 * and set winner varible which allows ServerScreen to print the result of the session
 	 * @param s1
 	 * @param s2
 	 */
@@ -149,6 +150,7 @@ public class Session extends SwingWorker<Void, Void>{
 	
 	@Override
 	protected void done() {
+		//while loop is done, means the session is end, print the result.
 		screen.getServerConsole().append("\n" +"session " + id + " is end, Winner is Player " +winner+" !!");
 	}
 }

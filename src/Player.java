@@ -103,7 +103,7 @@ public class Player {
 	
 	/**
 	 * player click a certain tile and try to move the selected piece to that tile.
-	 * this method check whether player can succeed.
+	 * This method check whether player can successfully move to the tile.
 	 * This method assume that player already selected a piece
 	 * 
 	 * @param tile the target tile
@@ -127,7 +127,11 @@ public class Player {
 		return false;
 	}
 
-	
+	/**
+	 * check whether the current tile allow piece to upgrade(man -> king)
+	 * @param tile
+	 * @return
+	 */
 	public boolean tryUpGrade(Tile tile) {
 		if((tile.getPosition().getX() == 0 && id == 1) || (tile.getPosition().getX() == 7 && id == 2)) {
 			return true;
@@ -140,7 +144,10 @@ public class Player {
 		turn = !turn;
 	}
 	
-	
+	/**
+	 * send command from this active player to the server
+	 * @param cmd
+	 */
 	public void sendToServer(Command cmd) {
 		if (socket == null) {
 			return;
@@ -158,7 +165,7 @@ public class Player {
 			oos.writeObject(null);
 			oos.flush();
 
-			//if active player is killingspree, do not end turn.
+			//if active player is killingspree(Multiple jumps), do not end turn.
 			if(!killingSpree) {
 				endTurn();
 			}

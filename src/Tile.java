@@ -25,14 +25,14 @@ public class Tile extends JLabel{
 		this.piece = piece;
 	}
 
-	//constructor
+	//constructor for tile with pieces
 	public Tile(int x, int y, Player p){
 		this.position = new Position(x, y);
 		this.piece = new Man(x, y, p);
 		this.resource = new Resource();
 	}
 	
-	
+	//constructor for tile without pieces
 	public Tile(int x, int y) {
 		this.position = new Position(x, y);
 		this.resource = new Resource();

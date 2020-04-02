@@ -54,9 +54,12 @@ public class Position implements Serializable{
 		return pos;
 	}
 
-		
+		/**
+		 * check whether the x and y is out of bounds
+		 * @return
+		 */
 	public boolean isOutOfBound() {
-		if(x > 7 || y > 7 || x < 0 || y < 0) {
+		if(x > GameScreen.boardHeight - 1 || y > GameScreen.boardWidth - 1 || x < 0 || y < 0) {
 			return true;
 		}else {
 			return false;
@@ -75,8 +78,16 @@ public class Position implements Serializable{
 			return false;
 		}
 	}
-	
-	//for examle this 0,0 that 1,1 Dir: bottom-right
+
+	/**
+	 * Check the direction by calculating the axis of two postion
+	 * for examle this pos is 0,0 and that pos is 1,1 
+	 * then the direction is: bottom-right
+	 * 
+	 * @param pos
+	 * @param distance
+	 * @return
+	 */
 	public Dir checkDirection(Position pos, int distance) {
 		int disX = pos.getX() - x;
 		int disY = pos.getY() - y;

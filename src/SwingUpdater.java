@@ -20,6 +20,7 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 		Command cmd;
 		while(true) {
 			
+			//keep reading the socket, and publish the command if they recieve.
 			if(socket.getInputStream() != null) {
 				if((cmd =player.recieveFromServer()) != null) {
 					publish(cmd);
@@ -33,11 +34,13 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 		 if(cmd == null) {
 			 return;
 		 }
-		 
+		 //if the command contain oriPos and targetPos
+		 //which means this is a move command (or win-move command )
 		 if(cmd.getOriPos() != null && cmd.getTargetPos() != null) {
 			game.turnMove(game.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
 		}
 		 
+		 //if the type of command is WIN or LOSE, end game
 		 if(cmd.getType() == CommandType.WIN || cmd.getType() == CommandType.LOSE) {
 			game.gameEnd(player, cmd.getType());
 		 }

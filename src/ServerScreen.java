@@ -22,15 +22,15 @@ public class ServerScreen extends JFrame implements Runnable{
 		this.setLayout(new BorderLayout());
 		this.setLocationRelativeTo(null);
 		
-		
+		//let the JTestAreacan be line-wrap and ineditable.
 		serverConsole = new JTextArea();
 		serverConsole.setLineWrap(true); 
 		serverConsole.setWrapStyleWord(true);
 		serverConsole.setEditable(false);
+		
+		//put in a JScrollPane which generate a scroll bar if there are a lot of messages.
 		this.add(new JScrollPane(serverConsole));
 
-		
-		this.setVisible(true);
 	}
 
 	@Override

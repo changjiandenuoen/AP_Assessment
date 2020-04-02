@@ -26,7 +26,6 @@ public class Controller extends ControllerAdapter {
 		//if its not your turn, mouse click will recieve nothing
 		if(!player.isTurn()) {
 			game.setGameInfoLabel("Please wait for other player move");
-			System.out.println(player + " - " + player.isTurn());
 			return;
 		}
 		
@@ -44,12 +43,12 @@ public class Controller extends ControllerAdapter {
 	
 	
 	/**
-	 * when user close the Jframe during the game
+	 * when user close the Jframe  window during the game
 	 * user will autometically lose the game as it will send a lose command to server
 	 */
 	@Override
 	public void windowClosing(WindowEvent e) {
-		
+			
 			super.windowClosing(e);
 			player.sendToServer(new Command(false));
 			
