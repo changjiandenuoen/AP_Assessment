@@ -5,12 +5,12 @@ import javax.swing.SwingWorker;
 
 public class SwingUpdater extends SwingWorker<Void, Command> {
 	
-	View view;
+	GameScreen game;
 	Player player;
 	Socket socket;
 	
-	public SwingUpdater(View view, Player player, Socket socket) {
-		this.view = view;
+	public SwingUpdater(GameScreen game, Player player, Socket socket) {
+		this.game = game;
 		this.player = player;
 		this.socket = socket;
 	}
@@ -19,7 +19,7 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 	protected Void doInBackground() throws Exception {
 		Command cmd;
 		while(true) {
-
+			
 			if(socket.getInputStream() != null) {
 				if((cmd =player.recieveFromServer()) != null) {
 					publish(cmd);
@@ -35,11 +35,11 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 		 }
 		 
 		 if(cmd.getOriPos() != null && cmd.getTargetPos() != null) {
-			view.turnMove(view.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
+			game.turnMove(game.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
 		}
 		 
 		 if(cmd.getType() == CommandType.WIN || cmd.getType() == CommandType.LOSE) {
-			 view.gameEnd(player, cmd.getType());
+			game.gameEnd(player, cmd.getType());
 		 }
 	}	
 }

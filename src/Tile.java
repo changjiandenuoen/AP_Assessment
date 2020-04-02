@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 
 public class Tile extends JLabel{
 	
+	private static final long serialVersionUID = 1L;
 	private Position position;
 	private Piece piece;
 	private Resource resource;

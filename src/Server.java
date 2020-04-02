@@ -4,6 +4,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.SwingUtilities;
 
 public class Server extends Thread{
 	
@@ -11,12 +12,16 @@ public class Server extends Thread{
 		Server.getInstance().run();
 	}
 
+	private ServerScreen screen;
 	private ServerSocket ss;
 	private HashMap<Integer, Session> sessionMap;
 	private final static int PORT = 9999;
 	
 	//private constructor
-	private Server() {}
+	private Server() {
+		this.screen = new ServerScreen();
+		SwingUtilities.invokeLater(screen);
+	}
 	
 	//static inner class
 	private static class ServerInstance{
@@ -39,7 +44,7 @@ public class Server extends Thread{
 			ArrayList<Socket> s2 = new ArrayList<Socket>();
 			int sessionId = 0;
 			OutputStream output = null;
-			
+
 			while(true) {
 				s1.add(ss.accept());
 				output = s1.get(sessionId).getOutputStream();
@@ -49,11 +54,11 @@ public class Server extends Thread{
 				output = s2.get(sessionId).getOutputStream();
 				output.write(2);
 				
-				Session session = new Session(s1.get(sessionId), s2.get(sessionId), sessionId);
-				sessionMap.put(sessionId, new Session(s1.get(sessionId), s2.get(sessionId), sessionId));
-				System.out.println("two client is connected to the server");
-				System.out.println("A new session is start! session id is " + sessionId);
-				session.start();
+				Session session = new Session(screen, s1.get(sessionId), s2.get(sessionId), sessionId);
+				sessionMap.put(sessionId, session);
+				screen.getServerConsole().append("\n"+"two client is connected to the server");
+				screen.getServerConsole().append("\n"+"A new session is start! session id is " + sessionId);
+				session.execute();
 				sessionId++;
 			}
 			

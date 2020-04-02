@@ -27,6 +27,7 @@ public class Player {
 		this.id = i;
 		this.turn = false;
 	}
+	
 //	getter and setter
 	public int getId() {
 		return id;
@@ -46,6 +47,9 @@ public class Player {
 		}else {
 			return false;
 		}
+	}
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 	public Piece getSelectPiece() {
 		return selectPiece;
@@ -122,21 +126,7 @@ public class Player {
 		
 		return false;
 	}
-	
-	public boolean tryMove(Piece piece, Tile tile, int distance) {
-		Position selectPos = piece.getPosition();
-		Position targetPos = tile.getPosition();
-		Dir direction = selectPos.checkDirection(targetPos, distance);
-		
-		if(direction == null) {
-			return false;
-		}
-		
-		if(selectPos.checkDistance(targetPos, distance)) {
-			return selectPiece.move(direction);
-		}
-		return false;
-	}
+
 	
 	public boolean tryUpGrade(Tile tile) {
 		if((tile.getPosition().getX() == 0 && id == 1) || (tile.getPosition().getX() == 7 && id == 2)) {

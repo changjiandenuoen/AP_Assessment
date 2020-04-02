@@ -3,27 +3,23 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-public class View extends JFrame implements Runnable{
+public class GameScreen extends JFrame implements Runnable{
 	
 	private static final long serialVersionUID = 1L;
 	public static final int unit = 40;
-	public static final int BoardWidth = 8;
-	public static final int BoardHeight = 8;
+	public static final int boardWidth = 8;
+	public static final int boardHeight = 8;
 	
 	private Controller controller;
 	private Resource resource;
 	private Tile[][] board;
-	private Tile[][] initialBoard;
 	
 	//player who control black
 	private Player p1;
@@ -87,18 +83,15 @@ public class View extends JFrame implements Runnable{
 	public void setBoard(Tile[][] board) {
 		this.board = board;
 	}
-	public Tile[][] getInitialBoard() {
-		return initialBoard;
-	}
 
 	//Constructor
-	public View(Player p){
+	public GameScreen(Player p){
 
 		//create a player with socket(active player) 
 		//and a player without socket
 		createPlayer(p);
 		controller = new Controller(p);
-		controller.setView(this);
+		controller.setGameScreen(this);
 		resource = new Resource();
 		this.setSize(19*unit,10*unit);
 		this.setTitle(p.toString());
@@ -106,6 +99,7 @@ public class View extends JFrame implements Runnable{
 		this.setLayout(new BorderLayout());
 		this.setLocationRelativeTo(null);
 		this.addWindowListener(controller);
+		
 		//this panel is the panel for the whole game screen
 		JPanel mainPanel = new JPanel();
 		mainPanel.setBackground(Color.white);
@@ -117,7 +111,7 @@ public class View extends JFrame implements Runnable{
 		
 		//this panel display the board (left)
 		boardPanel = new JPanel();
-		setGrid(boardPanel, 8, 8);
+		setGrid(boardPanel, boardHeight, boardWidth);
 		createBoardArea(boardPanel);
 		boardPanel.setBorder(BorderFactory.createDashedBorder(null, 1, 0));
 		
@@ -126,7 +120,7 @@ public class View extends JFrame implements Runnable{
 		setBorder(OuterInfoPanel, 1, 1, 1, 1);
 		
 		JPanel infoPanel = new JPanel();
-		setGrid(infoPanel, 4,1);
+		setGrid(infoPanel, 3,1);
 		
 		
 		serverLabel = new JLabel("Server now start a new game!");
@@ -135,9 +129,6 @@ public class View extends JFrame implements Runnable{
 		infoPanel.add(serverLabel);
 		infoPanel.add(selectedLabel);
 		infoPanel.add(gameInfoLabel);
-		
-		JButton replayBtn = new JButton("REPLAY");
-		infoPanel.add(replayBtn);
 		
 		OuterInfoPanel.add(infoPanel);
 		
@@ -156,18 +147,24 @@ public class View extends JFrame implements Runnable{
 	public void gameEnd(Player p, CommandType cmdType) {
 		if(cmdType == CommandType.WIN) {
 			getOppoPlayer().setWin(true);
-			p.sendToServer(new Command(false));
+			setServerLabel("This session is end!");
+			setSelectedLabel("Oh no!");
 			setGameInfoLabel("You Lose! Game Over!");
 		}
 		
 		if(cmdType == CommandType.LOSE) {
 			p.setWin(true);
+			setServerLabel("This session is end!");
+			setSelectedLabel("Congruaduations!");
 			setGameInfoLabel("You win!");
 		}
 		
 		removeAllMouseListenerOnBoard();
 	}
 	
+	/**
+	 * remove all mouse Listener from the chess board
+	 */
 	private void removeAllMouseListenerOnBoard() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -209,7 +206,7 @@ public class View extends JFrame implements Runnable{
 	 */
 	private void createBoardArea(JPanel chessBoardPanel) {
 		
-		board = new Tile[8][8];
+		board = new Tile[boardWidth][boardHeight];
 		
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -249,7 +246,6 @@ public class View extends JFrame implements Runnable{
                 chessBoardPanel.add(board[i][j]);     
  
             }
-            
         }
 	}
 	
@@ -298,10 +294,8 @@ public class View extends JFrame implements Runnable{
 	}
 	
 	/**
-	 * in the possible direction of active player from the current tile
-	 * there are some piece from another player that must kill!
-	 * find these possible tiles and add them into killList 
-	 * 
+	 * check whether the piece at the selectedTile have chance to kill other piece
+	 * by searching all the possible directions. 
 	 * @param tile the tile where the player's selected piece from
 	 * @param p the active player
 	 * @return true if there is a mustKill, else return false
@@ -319,7 +313,8 @@ public class View extends JFrame implements Runnable{
 		
 		//check all possible directions and find out all possibleTiles
 		for (int i = 0; i <possibleDir.size(); i++) {
-
+			
+			//find the possible Tile that piece can move to kill.
 			possibleTile = getTileByDir(selectedTile, possibleDir.get(i), 2);
 			Tile midTile;
 			
@@ -348,19 +343,16 @@ public class View extends JFrame implements Runnable{
 	 */
 	public boolean boardWinCheck(Player p) {
 		
-		boolean canMove = false;
-		
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
 				
+				//If board contain p2's pieces
 				if(board[i][j].isOccupied() && board[i][j].getPiece().getOwner() != p) {
 					return false;
-				}else {
-					//TODO:
-				}
-				
+				}	
 			}
 		}
+
 		return true;
 	}
 
@@ -399,7 +391,7 @@ public class View extends JFrame implements Runnable{
 				
 				if(player.getSelectPiece() != null ) {
 					
-					//if player can move piece, move piece, unless people must kill
+					//if player can move piece, move piece
 					if(player.tryMove(clickedTile, 1) && !player.isMustKill()) {
 						movePiece(player, clickedTile);
 						
@@ -466,6 +458,10 @@ public class View extends JFrame implements Runnable{
 	public void movePiece(Player p, Tile targetTile) {
 		Tile selectedTile = getSelectedTile(p);
 		movePieceToTile(p, targetTile);
+		
+		if(boardWinCheck(p)) {
+			p.setWin(true);
+		}
 		gameInfoLabel.setText(p + " move " + selectedTile.getPosition() + " to " + targetTile.getPosition());
 		p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
 		p.unselect();

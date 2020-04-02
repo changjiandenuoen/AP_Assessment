@@ -7,7 +7,7 @@ import java.awt.event.WindowEvent;
  */
 public class Controller extends ControllerAdapter {
 	
-	private View view;
+	private GameScreen game;
 	private Player player;
 	
 	public Controller(Player p){
@@ -15,8 +15,8 @@ public class Controller extends ControllerAdapter {
 	}
 	
 	//getter and setter
-	public void setView(View view) {
-		this.view = view;
+	public void setGameScreen(GameScreen game) {
+		this.game = game;
 	}
 
 
@@ -25,7 +25,7 @@ public class Controller extends ControllerAdapter {
 		
 		//if its not your turn, mouse click will recieve nothing
 		if(!player.isTurn()) {
-			view.setGameInfoLabel("Please wait for other player move");
+			game.setGameInfoLabel("Please wait for other player move");
 			System.out.println(player + " - " + player.isTurn());
 			return;
 		}
@@ -39,7 +39,7 @@ public class Controller extends ControllerAdapter {
 		}
 		
 		//move it
-		view.turnMove(player, clickedTile.getPosition());
+		game.turnMove(player, clickedTile.getPosition());
 	}
 	
 	

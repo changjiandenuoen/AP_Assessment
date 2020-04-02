@@ -23,11 +23,10 @@ public class Client extends Thread{
 			s = new Socket("127.0.0.1",port); 
 			id = s.getInputStream().read();
 			player = new Player(s, id);
-			System.out.println(player + "successfully connect to server" );
-			
-			View view = new View(player);
-			SwingUtilities.invokeLater(view);
-			new SwingUpdater(view, player, s).execute();
+			GameScreen game = new GameScreen(player);
+			game.setServerLabel(player + "successfully connect to server" );
+			SwingUtilities.invokeLater(game);
+			new SwingUpdater(game, player, s).execute();
 			
 			while(true) {}
 
