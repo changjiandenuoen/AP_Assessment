@@ -103,19 +103,9 @@ public class View extends JFrame implements Runnable{
 		this.setSize(19*unit,10*unit);
 		this.setTitle(p.toString());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		//if anytime u closes this game Screen, you will autometically lose
-		//because it will send a LOSE type of command to the server.
-		this.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e) {
-				super.windowClosing(e);
-				p.sendToServer(new Command(false));
-			}
-		});
-		
 		this.setLayout(new BorderLayout());
 		this.setLocationRelativeTo(null);
-		
+		this.addWindowListener(controller);
 		//this panel is the panel for the whole game screen
 		JPanel mainPanel = new JPanel();
 		mainPanel.setBackground(Color.white);

@@ -1,9 +1,9 @@
 
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 
 
-public class Controller extends MouseAdapter {
+public class Controller extends ControllerAdapter {
 	
 	private View view;
 	private Player player;
@@ -37,6 +37,14 @@ public class Controller extends MouseAdapter {
 		}
 		view.turnMove(player, clickedTile.getPosition());
 	}
-
+	
+	
+	@Override
+	public void windowClosing(WindowEvent e) {
+		
+			super.windowClosing(e);
+			player.sendToServer(new Command(false));
+			
+	}
 	
 }
