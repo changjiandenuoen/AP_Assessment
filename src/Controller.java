@@ -1,10 +1,9 @@
 
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-public class Controller extends MouseAdapter{
+public class Controller extends MouseAdapter {
 	
 	private View view;
 	private Player player;
@@ -36,10 +35,8 @@ public class Controller extends MouseAdapter{
 		if(e.getSource() instanceof Tile) {
 			clickedTile = ((Tile) e.getSource());
 		}
-
 		view.turnMove(player, clickedTile.getPosition());
-
 	}
-	
+
 	
 }

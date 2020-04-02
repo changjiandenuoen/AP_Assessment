@@ -1,11 +1,4 @@
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,13 +12,9 @@ public class Server extends Thread{
 		new Server().run();
 	}
 
-	static Player p1;
-	static Player p2;
-	private static ServerSocket ss;
-	private static HashMap<Integer, Session> sessionMap;
-
-	private static int PORT = 9999;
-	
+	private ServerSocket ss;
+	private HashMap<Integer, Session> sessionMap;
+	private final static int PORT = 9999;
 	
 	@Override
 	public void run() {
@@ -37,10 +26,11 @@ public class Server extends Thread{
 			ArrayList<Socket> s1 = new ArrayList<Socket>();
 			ArrayList<Socket> s2 = new ArrayList<Socket>();
 			int sessionId = 0;
+			OutputStream output = null;
 			
 			while(true) {
 				s1.add(ss.accept());
-				OutputStream output = s1.get(sessionId).getOutputStream();
+				output = s1.get(sessionId).getOutputStream();
 				output.write(1);
 
 				s2.add(ss.accept());

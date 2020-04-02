@@ -3,6 +3,8 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -28,24 +30,32 @@ public class View extends JFrame implements Runnable{
 	//player who control white
 	private Player p2;
 	
+	//the chessBoard and three labels
 	private JPanel boardPanel;
-	private JLabel turnLabel;
+	private JLabel serverLabel;
 	private JLabel 	selectedLabel;
 	private JLabel 	gameInfoLabel;
 	
-	
-	public Player getOppoPlayer() {
-		if(p1.getSocket() == null) {
+	//getter and setters
+	public Player getActivePlayer() {
+		if(p1.isActive()) {
 			return p1;
 		}else{
 			return p2;
 		}
 	}
-	public JLabel getTurnLabel() {
-		return turnLabel;
+	public Player getOppoPlayer() {
+		if(!p1.isActive()) {
+			return p1;
+		}else{
+			return p2;
+		}
 	}
-	public void setTurnLabel(String turnLabel) {
-		this.turnLabel.setText(turnLabel);
+	public JLabel getServerLabel() {
+		return serverLabel;
+	}
+	public void setServerLabel(String serverLabel) {
+		this.serverLabel.setText(serverLabel);
 	}
 	public JLabel getSelectedLabel() {
 		return selectedLabel;
@@ -59,7 +69,6 @@ public class View extends JFrame implements Runnable{
 	public void setGameInfoLabel(String gameInfoLabel) {
 		this.gameInfoLabel.setText(gameInfoLabel);
 	}
-	
 	public Controller getController() {
 		return controller;
 	}
@@ -84,14 +93,26 @@ public class View extends JFrame implements Runnable{
 
 	//Constructor
 	public View(Player p){
-		
+
+		//create a player with socket(active player) 
+		//and a player without socket
 		createPlayer(p);
 		controller = new Controller(p);
 		controller.setView(this);
 		resource = new Resource();
 		this.setSize(19*unit,10*unit);
-		this.setTitle("game");
+		this.setTitle(p.toString());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//if anytime u closes this game Screen, you will autometically lose
+		//because it will send a LOSE type of command to the server.
+		this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				p.sendToServer(new Command(false));
+			}
+		});
+		
 		this.setLayout(new BorderLayout());
 		this.setLocationRelativeTo(null);
 		
@@ -118,10 +139,10 @@ public class View extends JFrame implements Runnable{
 		setGrid(infoPanel, 4,1);
 		
 		
-		turnLabel = new JLabel("turn[0] : game start!");
+		serverLabel = new JLabel("turn[0] : game start!");
 		selectedLabel = new JLabel("nothing selected");
 		gameInfoLabel = new JLabel("welcome to the checkers game!");
-		infoPanel.add(turnLabel);
+		infoPanel.add(serverLabel);
 		infoPanel.add(selectedLabel);
 		infoPanel.add(gameInfoLabel);
 		
@@ -138,33 +159,32 @@ public class View extends JFrame implements Runnable{
 	
 
 	public void initInfo() {
-		turnLabel.setText("turn[1] : p1");
-		selectedLabel.setText("P1 select: man (1,0)"); 
-		gameInfoLabel.setText("P1 move man (1,0) to (2,1)"); 
+		serverLabel.setText("Server now start a new game!");
+		selectedLabel.setText("This Label presents the selections! Please select a piece!"); 
+		gameInfoLabel.setText("This Label presents the game infoamtion"); 
 	}
 	
-	/**
-	 * update the message from the console of the frame
-	 */
-	public void updateInfo(int numOfTurn, Player p, Piece selectedPiece, Position pos) {
-		turnLabel.setText("turn[" + numOfTurn +"] : " + p + "'s Turn");
-		selectedLabel.setText( p + " select: " + selectedPiece); 
-		gameInfoLabel.setText( p + "P1 move " + selectedPiece + " to " + pos); 
+	public void gameEnd(Player p, CommandType cmdType) {
+		if(cmdType == CommandType.WIN) {
+			getOppoPlayer().setWin(true);
+			setGameInfoLabel("You Lose! Game Over!");
+		}
+		
+		if(cmdType == CommandType.LOSE) {
+			p.setWin(true);
+			setGameInfoLabel("You win!");
+		}
+		removeAllMouseListenerOnBoard();
 	}
 	
-	public void updateInfo(Player p, Piece selectedPiece) {
-		selectedLabel.setText( p + " select: " + selectedPiece); 
+	private void removeAllMouseListenerOnBoard() {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+            	board[i][j].removeMouseListener(controller);
+            }
+        }
 	}
-	
-	/**
-	 * clean all the pieces on the board, return the initial states of the game
-	 */
-	public void replay() {
-		createBoardArea(boardPanel);
-		initInfo();
-		repaint();
-	}
-	
+
 	//Helper Methods
 	
 	private void createPlayer(Player p) {
@@ -204,16 +224,16 @@ public class View extends JFrame implements Runnable{
             	
             	
             	//initialize the pieces
-                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
-//            	if(((i == 2)&& j %2 == 1)) {
+//                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
+            	if(((i == 2)&& j %2 == 1)) {
                 	board[i][j] = new Tile(i,j,p2);
                 	
                 	board[i][j].occupy(board[i][j].getPiece());
                 	 
                 }
                 
-                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
-//                if(((i == 5 )&& j%2 == 0) ){
+//                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
+                if(((i == 5 )&& j%2 == 0) ){
                 	board[i][j] = new Tile(i,j,p1);
                 	board[i][j].occupy(board[i][j].getPiece());
                 }
@@ -246,17 +266,17 @@ public class View extends JFrame implements Runnable{
 	 * 1. check whether the game is end
 	 * 2. check whether the player can continuously kill other pieces
 	 */
-	public void boardCheck(Player p){
+	public void boardMustKillCheck(Player p){
 		boolean isMustKill = false;
 		 
-		if(p.getSocket() == null || p.getSelectPiece() == null) {
+		if(!p.isActive() || p.getSelectPiece() == null) {
 			return;
 		}
 		
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
 				
-				if(board[i][j].getPiece() !=null && board[i][j].getPiece().getOwner() == p) {
+				if(board[i][j].isOccupied() && board[i][j].getPiece().getOwner() == p) {
 					if(mustKillCheck(board[i][j], p)) {
 						isMustKill = true;
 					}	
@@ -278,7 +298,7 @@ public class View extends JFrame implements Runnable{
 	 */
 	public boolean multiKillCheck(Player p) {
 		
-		if(p.getSocket() == null || p.getSelectPiece() == null) {
+		if(!p.isActive() || p.getSelectPiece() == null) {
 			return false;
 		}
 		
@@ -320,13 +340,30 @@ public class View extends JFrame implements Runnable{
 				
 				if(midTile.isOccupied()) {
 					if(midTile.getPiece().getOwner() != p) {
-						System.out.println("possible kill move: " + possibleDir.get(i)+ " " +selectedTile.getPosition()+ " to "+ possibleTile.getPosition());
+						setGameInfoLabel("possible kill move: " + possibleDir.get(i)+ " " +selectedTile.getPosition()+ " to "+ possibleTile.getPosition());
 						flag = true;
 					}	
 				}
 			}	
 		}
 		return flag;
+	}
+	
+	/**
+	 * check the whole board and see whether player p is win
+	 * if another player do not have any peice on the board, p will win for sure
+	 * @return
+	 */
+	public boolean boardWinCheck(Player p) {
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[i].length; j++) {
+				
+				if(board[i][j].isOccupied() && board[i][j].getPiece().getOwner() != p) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	
@@ -352,8 +389,7 @@ public class View extends JFrame implements Runnable{
 		
 				//check whether the whole board contian a mustKill?
 				//if so, set mustKill to true
-				boardCheck(player);
-				System.out.println(player + " is mustKill? " + player.isMustKill());
+				boardMustKillCheck(player);
 				
 			//if user click a tile that has no piece
 			}else {
@@ -418,6 +454,11 @@ public class View extends JFrame implements Runnable{
 	
 	}
 	
+	/**
+	 * Player move to the targetTile, and then send move command to server
+	 * @param p
+	 * @param targetTile
+	 */
 	public void movePiece(Player p, Tile targetTile) {
 		Tile selectedTile = getSelectedTile(p);
 		movePieceToTile(p, targetTile);
@@ -426,7 +467,8 @@ public class View extends JFrame implements Runnable{
 	}
 	
 	/**
-	 * Player move to the targetTile and kill the piece inbetween two positon
+	 * Player move to the targetTile and kill the piece inbetween ori tile and target tile
+	 * after killing the piece, this method will check wether player is winner/ mustKill/ multi-kill states
 	 * @param p
 	 * @param targetTile
 	 */
@@ -444,12 +486,16 @@ public class View extends JFrame implements Runnable{
 			cleanTile(midPiece.getPosition());
 		}
 		
+		if(boardWinCheck(p)) {
+			p.setWin(true);
+		}
+		
 		if(p.isMustKill()) {
 			p.setMustKill(false);
 		}
 
 		if(multiKillCheck(p)) {
-			System.out.println(p + " is killing spree!");
+			setGameInfoLabel(p + " is killing spree!");
 			p.setMustKill(true);
 			p.setKillingSpree(true);
 		}else {
@@ -457,8 +503,18 @@ public class View extends JFrame implements Runnable{
 			p.unselect();
 		}
 		
+		//player must send the kill to the server
+		//if player is killing spree, game will not switch the turn.
 		p.sendToServer(new Command(selectedTile.getPosition(), targetTile.getPosition(),p.isKillingSpree()));
-
+		
+		//if Player is the winner after he/she kill a piece
+		//send a winner command to the server
+		if(p.isWin()) {
+			System.out.println(p + "send a winner command to server");
+			Command cmd = new Command(true);
+			p.sendToServer(cmd);
+			gameEnd(p, CommandType.LOSE);
+		}
 
 	}
 	
@@ -533,7 +589,6 @@ public class View extends JFrame implements Runnable{
 			Position selectedPos = p.getSelectPiece().getPosition();
 			return board[selectedPos.getX()][selectedPos.getY()];			
 		}
-
 	}
 	
 	
@@ -541,8 +596,8 @@ public class View extends JFrame implements Runnable{
 	
 	@Override
 	public void run() {
-
 		this.setVisible(true);
 	}
+	
 
 }

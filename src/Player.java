@@ -11,10 +11,12 @@ import java.net.Socket;
 public class Player {
 	private int id;
 	private boolean turn;
+	private boolean isActive;
 	//when player have to kill a peice, this will be true
 	private boolean mustKill;
 	//when player already kill a piece, and it can continue kill another one.
 	private boolean killingSpree;
+	private boolean isWin;
 	private Piece selectPiece;
 	private Socket socket;
 	
@@ -37,6 +39,13 @@ public class Player {
 	}
 	public void setTurn(boolean turn) {
 		this.turn = turn;
+	}
+	public boolean isActive() {
+		if(socket != null) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 	public Piece getSelectPiece() {
 		return selectPiece;
@@ -62,7 +71,12 @@ public class Player {
 	public void setKillingSpree(boolean killingSpree) {
 		this.killingSpree = killingSpree;
 	}
-	
+	public boolean isWin() {
+		return isWin;
+	}
+	public void setWin(boolean isWin) {
+		this.isWin = isWin;
+	}
 	
 	@Override
 	public String toString() {
@@ -192,7 +206,7 @@ public class Player {
 			}else {
 				return null;
 			}
-//			System.out.println(this.toString() + " recieve Command "+ cmd );
+			
 			
 			//if the other player is killing spree, then do not change turn.
 			if(cmd.isKillingSpree()) {

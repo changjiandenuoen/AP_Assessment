@@ -1,5 +1,4 @@
 
-
 public enum Dir {
 	TOPLEFT(-1, -1), 
 	TOPRIGHT(-1, 1), 
@@ -10,7 +9,6 @@ public enum Dir {
 	private int y;
 	private String name;
 	
-
 	private Dir(int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -18,10 +16,10 @@ public enum Dir {
 	
 	//getters
 	public int getX(int i) {
-		return mulitpleNum(i, x);
+		return i*x;
 	}
 	public int getY(int i) {
-		return mulitpleNum(i, y);
+		return i*y;
 	}
 	public String getName() {
 		return name;
@@ -56,10 +54,6 @@ public enum Dir {
 		}
 
 		return null;
-	}
-
-	private int mulitpleNum(int mul, int i) {
-		return mul*i;
 	}
 	
 }

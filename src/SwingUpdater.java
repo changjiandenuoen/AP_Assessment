@@ -30,7 +30,14 @@ public class SwingUpdater extends SwingWorker<Void, Command> {
 	
 	protected void process(List<Command> cmds) {
 		 Command cmd = cmds.get(cmds.size()-1);
-		 view.turnMove(view.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
-	}
-	
+		 if(cmd == null) {
+			 return;
+		 }
+		 
+		 if(cmd.getType() == CommandType.MOVE) {
+			view.turnMove(view.getOppoPlayer(), cmd.getOriPos(), cmd.getTargetPos());
+		}else {
+			view.gameEnd(player, cmd.getType());
+		}
+	}	
 }

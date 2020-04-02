@@ -8,12 +8,11 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class Session extends Thread{
-	//num of turn
+
 	private int id;
-	private int turn;
 	private boolean isGameEnd;
-	Socket s1;
-	Socket s2;
+	private Socket s1;
+	private Socket s2;
 	
 	public Session(Socket s1, Socket s2, int id) {
 		this.s1 = s1;
@@ -22,7 +21,6 @@ public class Session extends Thread{
 		this.isGameEnd = false;
 	}
 
-	@SuppressWarnings("static-access")
 	@Override
 	public void run() {
 		while(true) {
@@ -30,18 +28,17 @@ public class Session extends Thread{
 			if(!isGameEnd) {
 				transit(s1, s2);
 			}else {
-				System.out.println("session " + id +"is End! Winner is player 1");
+				System.out.println("session " + id +" is End! Winner is player 1");
 				break;
 			}
 			
 			if(!isGameEnd) {
 				transit(s2, s1);
 			}else {
-				System.out.println("session " + id +"is End! Winner is player 2");
+				System.out.println("session " + id +" is End! Winner is player 2");
 				break;
 			}
 		}
-	
 	}
 	
 	/**
@@ -53,44 +50,43 @@ public class Session extends Thread{
 		Command cmd;
 		
 		//check connection with socket
-//		if(!autoLose(s1,s2)) {
-//			if((cmd = receiveCommand(s1)) == null) return;
-//			sendCommand(s2, cmd);
-//		}else {
-//			return;
-//		}
-		if((cmd = receiveCommand(s1)) == null) return;
+
+		if((cmd = receiveCommand(s1)) == null) { 
+			return;
+		}
+		
+		if(cmd.getType() == CommandType.LOSE || cmd.getType() == CommandType.WIN) {
+			isGameEnd = true;
+		}
+		
 		sendCommand(s2, cmd);
 	}
 	
-	public Boolean isClientClose(Socket socket){ 
-		   try{ 
-			   	socket.sendUrgentData(0xFF);
-		    	return false; 
-		   }catch(Exception e){ 
-			   return true; 
-		   } 
-	} 
-	
-//	/**
-//	 * if one client is disconnection, then the session autometically end
-//	 * the winner is the player at another client !
-//	 * @param socket the socket who disconnect
-//	 * @return true means s1 disconnect and s2 win
-//	 */
+	/**
+	 * if one client is disconnection, then the session autometically end
+	 * the winner is the player at another client !
+	 * @param socket the socket who disconnect
+	 * @return true means s1 disconnect and s2 win
+	 */
 //	private Boolean autoLose(Socket s1, Socket s2) {
-//		if(isClientClose(s1)) {
+//		if(s1.isClosed()) {
 //			
-//			//generate a disconnection type of command and send to another client
+//			//generate a lose type of command and send to another client
+//			//indicates this player is lose
 //			Command cmd = new Command(false);
 //			sendCommand(s2, cmd);
 //			isGameEnd = true;
+//			try {
+//				s2.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 //			return true;
 //		}else {
 //			return false;
 //		}
 //	}
-//	
+	
 	
 	private Command receiveCommand(Socket sender) {
 		
@@ -134,12 +130,15 @@ public class Session extends Thread{
 			oos.flush();
 			
 		} catch (IOException e) {
-			e.printStackTrace();
-		}finally {
+			try {
+				reciever.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		} finally {
 			os = null;
 			bos = null;
 			oos = null;
 		}
 	}
-	
 }
