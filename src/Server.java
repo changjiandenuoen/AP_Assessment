@@ -5,16 +5,28 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class Server extends Thread{
 	
 	public static void main(String[] args) {
-		new Server().run();
+		Server.getInstance().run();
 	}
 
 	private ServerSocket ss;
 	private HashMap<Integer, Session> sessionMap;
 	private final static int PORT = 9999;
+	
+	//private constructor
+	private Server() {}
+	
+	//static inner class
+	private static class ServerInstance{
+		private final static Server serverInstance = new Server();
+	}
+	
+	//a public getter for Singleton Server
+	public static Server getInstance() {
+		return ServerInstance.serverInstance;
+	}
 	
 	@Override
 	public void run() {
