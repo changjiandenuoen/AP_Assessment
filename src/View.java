@@ -216,16 +216,16 @@ public class View extends JFrame implements Runnable{
             	
             	
             	//initialize the pieces
-//                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
-            	if(((i == 2)&& j %2 == 1)) {
+                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
+//            	if(((i == 2)&& j %2 == 1)) {
                 	board[i][j] = new Tile(i,j,p2);
                 	
                 	board[i][j].occupy(board[i][j].getPiece());
                 	 
                 }
                 
-//                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
-                if(((i == 5 )&& j%2 == 0) ){
+                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
+//                if(((i == 5 )&& j%2 == 0) ){
                 	board[i][j] = new Tile(i,j,p1);
                 	board[i][j].occupy(board[i][j].getPiece());
                 }
@@ -254,9 +254,9 @@ public class View extends JFrame implements Runnable{
 	}
 	
 	/**
-	 * after each valid move, game will check the whole board to see the situation
-	 * 1. check whether the game is end
-	 * 2. check whether the player can continuously kill other pieces
+	 * check the whole board and see is there any piece that can be killed
+	 * if so, set player to be "must Kill" status
+	 * @param p
 	 */
 	public void boardMustKillCheck(Player p){
 		boolean isMustKill = false;
@@ -283,7 +283,7 @@ public class View extends JFrame implements Runnable{
 	}
 
 	/**
-	 * If player selected piece have chance to kill other piece
+	 * If player selected piece and have chance to kill other piece
 	 * then, return true, else return false;
 	 * @param p
 	 * @return
@@ -365,6 +365,11 @@ public class View extends JFrame implements Runnable{
 	}
 
 	
+	/**
+	 * turnMove method handle the whole process when player click the mouse on a tile
+	 * @param player
+	 * @param targetPos
+	 */
 	public void turnMove(Player player, Position targetPos) {
 		Tile clickedTile = board[targetPos.getX()][targetPos.getY()];
 		Piece clickedPiece = clickedTile.getPiece();
@@ -393,18 +398,20 @@ public class View extends JFrame implements Runnable{
 			}else {
 				
 				if(player.getSelectPiece() != null ) {
-
-					if(player.tryMove(clickedTile) && !player.isMustKill()) {
 					
+					//if player can move piece, move piece, unless people must kill
+					if(player.tryMove(clickedTile, 1) && !player.isMustKill()) {
 						movePiece(player, clickedTile);
-	
-					}else if(player.tryKill(clickedTile)) {
 						
+					//if player can kill, kill piece
+					}else if(player.tryMove(clickedTile, 2)) {
 						killPiece(player, clickedTile);
 
 					}	
 				}	
 			}
+			
+		//after the click, show the selected piece on the selectedLabel
 		if(player.getSelectPiece() != null) {
 			getSelectedLabel().setText(player.getSelectPiece().toString());
 		}else {

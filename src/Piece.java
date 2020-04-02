@@ -50,10 +50,19 @@ public abstract class Piece {
 		this.owner = p;
 	}
 	
-	
+	/**
+	 * check whether the piece can move to the certain direction
+	 * @param direction
+	 * @return
+	 */
 	public abstract boolean move(Dir direction);
 	
+	/**
+	 * get all the possible direction that the piece can move to 
+	 * @return a direciton arrayList
+	 */
 	protected abstract ArrayList<Dir> getAllDir();
+	
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + "  " + position;

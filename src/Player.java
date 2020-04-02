@@ -103,18 +103,19 @@ public class Player {
 	 * This method assume that player already selected a piece
 	 * 
 	 * @param tile the target tile
-	 * @return
+	 * @param distance the distance between the piece you selected and the targetTile
+	 * @return true if can move, else return false
 	 */
-	public boolean tryMove(Tile tile) {
+	public boolean tryMove(Tile tile, int distance) {
 		Position selectPos = selectPiece.getPosition();
 		Position targetPos = tile.getPosition();
-		Dir direction = selectPos.checkDirection(targetPos, 1);
+		Dir direction = selectPos.checkDirection(targetPos, distance);
 		
 		if(direction == null) {
 			return false;
 		}
 		
-		if(selectPos.checkDistance(targetPos, 1)) {
+		if(selectPos.checkDistance(targetPos, distance)) {
 			return selectPiece.move(direction);
 			
 		}
@@ -122,24 +123,19 @@ public class Player {
 		return false;
 	}
 	
-
-	public boolean tryKill(Tile tile) {
-		Position selectPos = selectPiece.getPosition();
+	public boolean tryMove(Piece piece, Tile tile, int distance) {
+		Position selectPos = piece.getPosition();
 		Position targetPos = tile.getPosition();
-		Dir direction = selectPos.checkDirection(targetPos, 2);
+		Dir direction = selectPos.checkDirection(targetPos, distance);
 		
 		if(direction == null) {
 			return false;
 		}
 		
-		if(selectPos.checkDistance(targetPos, 2)) {
-			
+		if(selectPos.checkDistance(targetPos, distance)) {
 			return selectPiece.move(direction);
-			
 		}
-		
-		
-		return true;
+		return false;
 	}
 	
 	public boolean tryUpGrade(Tile tile) {

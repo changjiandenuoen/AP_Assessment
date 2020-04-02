@@ -3,6 +3,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+/**
+ * This abstract class implements listeners interface, 
+ * which allows more interfaces to be added in the future
+ * Also, it will make the controller class nice looking.
+ */
 public abstract class ControllerAdapter implements MouseListener, WindowListener {
 
 	@Override

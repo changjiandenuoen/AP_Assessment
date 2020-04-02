@@ -2,7 +2,9 @@
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
-
+/**
+ * Handle the interface between user input and GUI
+ */
 public class Controller extends ControllerAdapter {
 	
 	private View view;
