@@ -24,12 +24,19 @@ public class Man extends Piece {
 	
 	@Override
 	public boolean move(Dir direction) {
-		
-		if((owner.getId() == 1 && (direction == Dir.TOPLEFT || direction == Dir.TOPRIGHT))
-				|| (owner.getId() == 2 && (direction == Dir.BOTLEFT || direction == Dir.BOTRIGHT))) {
-			return true;
+		if(owner.isKillingSpree()) {
+			if(direction == Dir.TOPLEFT || direction == Dir.TOPRIGHT || direction == Dir.BOTLEFT || direction == Dir.BOTRIGHT) {
+				return true;
+			}else {
+				return false;
+			}
 		}else {
-			return false;
+			if((owner.getId() == 1 && (direction == Dir.TOPLEFT || direction == Dir.TOPRIGHT))
+					|| (owner.getId() == 2 && (direction == Dir.BOTLEFT || direction == Dir.BOTRIGHT))) {
+				return true;
+			}else {
+				return false;
+			}
 		}
 	}
 	
@@ -38,16 +45,26 @@ public class Man extends Piece {
 	 */
 	@Override
 	protected ArrayList<Dir> getAllDir(){
+		
 		ArrayList<Dir> dirList = new ArrayList<Dir>();
-		if(owner.getId() == 1) {
+		
+		if(owner.isKillingSpree()) {
 			dirList.add(Dir.TOPLEFT);
 			dirList.add(Dir.TOPRIGHT);
-		}
-		if(owner.getId() == 2) {
 			dirList.add(Dir.BOTLEFT);
 			dirList.add(Dir.BOTRIGHT);
+			return dirList;
+			
+		}else {
+			if(owner.getId() == 1) {
+				dirList.add(Dir.TOPLEFT);
+				dirList.add(Dir.TOPRIGHT);
+			}
+			if(owner.getId() == 2) {
+				dirList.add(Dir.BOTLEFT);
+				dirList.add(Dir.BOTRIGHT);
+			}
+			return dirList;
 		}
-		return dirList;
 	}
-
 }

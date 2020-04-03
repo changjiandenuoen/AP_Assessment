@@ -99,6 +99,7 @@ public class GameScreen extends JFrame implements Runnable{
 		this.setLayout(new BorderLayout());
 		this.setLocationRelativeTo(null);
 		this.addWindowListener(controller);
+		this.setResizable(false);
 		
 		//this panel is the panel for the whole game screen
 		JPanel mainPanel = new JPanel();
@@ -363,8 +364,8 @@ public class GameScreen extends JFrame implements Runnable{
             	
             	
             	//initialize the white pieces
-//                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
-            	if(((i == 2)&& j %2 == 1)) {
+                if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
+//            	if(((i == 2)&& j %2 == 1)) {
                 	board[i][j] = new Tile(i,j,p2);
                 	
                 	board[i][j].occupy(board[i][j].getPiece());
@@ -372,8 +373,8 @@ public class GameScreen extends JFrame implements Runnable{
                 }
                 
                 //initialize the black pieces
-//                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
-                if(((i == 5 )&& j%2 == 0) ){
+                if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
+//                if(((i == 5 )&& j%2 == 0) ){
                 	board[i][j] = new Tile(i,j,p1);
                 	board[i][j].occupy(board[i][j].getPiece());
                 }
@@ -553,7 +554,7 @@ public class GameScreen extends JFrame implements Runnable{
 	 */
 	private boolean multiKillCheck(Player p) {
 		
-		if(!p.isActive() || p.getSelectPiece() == null) {
+		if(p.getSelectPiece() == null) {
 			return false;
 		}
 		

@@ -171,7 +171,11 @@ public class Player {
 			}
 			
 		}catch (IOException e) {
-			e.printStackTrace();
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}finally {
 			oos = null;
 			bos = null;
