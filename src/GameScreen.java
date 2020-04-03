@@ -18,7 +18,6 @@ public class GameScreen extends JFrame implements Runnable{
 	public static final int boardHeight = 8;
 	
 	private Controller controller;
-	private Resource resource;
 	private Tile[][] board;
 	
 	//player who control black
@@ -71,12 +70,7 @@ public class GameScreen extends JFrame implements Runnable{
 	public void setController(Controller controller) {
 		this.controller = controller;
 	}
-	public Resource getResource() {
-		return resource;
-	}
-	public void setResource(Resource resource) {
-		this.resource = resource;
-	}
+
 	public Tile[][] getBoard() {
 		return board;
 	}
@@ -92,7 +86,6 @@ public class GameScreen extends JFrame implements Runnable{
 		createPlayer(p);
 		controller = new Controller(p);
 		controller.setGameScreen(this);
-		resource = new Resource();
 		this.setSize(19*unit,10*unit);
 		this.setTitle(p.toString());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -365,7 +358,6 @@ public class GameScreen extends JFrame implements Runnable{
             	
             	//initialize the white pieces
                 if(((i == 0 || i== 2)&& j %2 == 1)|| (i == 1&& j%2 == 0)) {
-//            	if(((i == 2)&& j %2 == 1)) {
                 	board[i][j] = new Tile(i,j,p2);
                 	
                 	board[i][j].occupy(board[i][j].getPiece());
@@ -374,7 +366,6 @@ public class GameScreen extends JFrame implements Runnable{
                 
                 //initialize the black pieces
                 if(((i == 5 || i== 7)&& j%2 == 0)|| (i == 6 && j%2 == 1) ){
-//                if(((i == 5 )&& j%2 == 0) ){
                 	board[i][j] = new Tile(i,j,p1);
                 	board[i][j].occupy(board[i][j].getPiece());
                 }

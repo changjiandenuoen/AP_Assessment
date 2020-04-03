@@ -7,7 +7,6 @@ public class Command implements Serializable{
 	private Position targetPos;
 	private boolean isKillingSpree;
 	private CommandType type;
-	private int clientType;
 	
 	
 	//getter and setter
@@ -34,12 +33,6 @@ public class Command implements Serializable{
 	}
 	public void setType(CommandType type) {
 		this.type = type;
-	}
-	public int getClientType() {
-		return clientType;
-	}
-	public void setClientType(int clientType) {
-		this.clientType = clientType;
 	}
 	
 	//constructor for move command
